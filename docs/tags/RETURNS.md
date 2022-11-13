@@ -7,9 +7,9 @@
 
 ## Overview
 
-The `@param` tag attaches a description to a parameter name. When combined with the function or class parsers (future capability), it associates this description with the named parameters.
+The `@returns` tag attaches a description to a function's return value.
 
-Parameter data type is acquired from the function or class argument specification.
+The returns data type is acquired from the function or class argument specification.
 
 ## Examples
 
@@ -18,17 +18,19 @@ def sayHello(name: str, age: int) -> str:
     """
         @param name This is the name of the person you are trying to talk to
         @param age This is your current age
+        @returns A simple string saying hi to your friend, and how old you are.
     """
     return ("Hello, " + name + ", I am " + str(age) + " years old.")
 ```
 
 ```python
-def sayHello(name: str, age: int) -> str:
+def sayHello(name: str, age: int) -> None:
     """
         @param name This is the name of the person you are trying to talk to.
         If needed, your description can spill over onto a second line, or more if needed.
-
         @param age This is your current age
+        @returns A simple string saying hi to your friend, and how old you are.
+        If needed, you can make this as long of a description as you want.
     """
     return ("Hello, " + name + ", I am " + str(age) + " years old.")
 ```

@@ -13,13 +13,21 @@ def parse_docstring(docstring: str) -> dict:
         Omitting the space after the '-' character will not treat it as an unordered list.
 
         Ordered lists can be created with the "<ol>" character before it.
+
+        Available Tags:
+
+        - @param
+        - @returns
     """
+
     # Guard clause
     if not isinstance(docstring, str):
         return
 
     description = ""
+
     parameters = []
+    returns = ""
 
     parsed = docstring.splitlines()
 
@@ -102,14 +110,46 @@ def parse_docstring(docstring: str) -> dict:
         if parameter_name != "":   # Final catch for parameters not added yet
             add_parameter(parameter_name, parameter_description)
     
+    def get_returns() -> str:
+        """Goes through the doc string and looks for the final return value annotated by the @returns tag"""
+        return_desc = ""
+
+        for line in parsed:
+            stripped_line = line.strip()
+            
+            if stripped_line[0:9] == "@returns ":
+                if return_desc != "":
+                    # Previous returns description complete, about to start a new one
+                    return_desc = return_desc.strip()
+                
+                # We have encountered a new return description, start recording the info
+                return_desc = stripped_line[9:len(stripped_line)]
+                continue
+
+            if return_desc != "" and stripped_line[0:1] == "@":
+                # Already started parsing a parameter, but now encountering a new tag
+                return_desc = return_desc.strip()
+                continue
+
+            if return_desc != "":
+                # Have found a parameter already, and now its description has spilled on to another line
+                return_desc += " " + stripped_line
+
+        if return_desc != "":   # Final catch for parameters not added yet
+            return return_desc.strip()
+
+
+    # Begin parsing the docstring
     description = get_description()
 
     # Parse Tags (Alphabetical Order)
     get_parameters()
+    returns = get_returns()
 
     return {
         "description": description,
 
         # Tags (Alphabetical Order)
-        "parameters": parameters
+        "parameters": parameters,
+        "returns": returns
     }
