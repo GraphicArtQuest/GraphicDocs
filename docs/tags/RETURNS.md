@@ -1,4 +1,4 @@
-# @param
+# @returns
 
 ## Table of Contents
 
