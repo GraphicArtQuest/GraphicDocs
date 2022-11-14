@@ -16,7 +16,7 @@ class TestParseDocstring_Since(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
-        expected_docstring_return["since"] = False
+        expected_docstring_return["since"] = None
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
@@ -29,7 +29,7 @@ class TestParseDocstring_Since(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
-        expected_docstring_return["since"] = False
+        expected_docstring_return["since"] = None
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
     
@@ -43,7 +43,7 @@ class TestParseDocstring_Since(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
-        expected_docstring_return["since"] = False
+        expected_docstring_return["since"] = None
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
@@ -165,7 +165,7 @@ class TestParseDocstring_Since(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
-        expected_docstring_return["since"] = False
+        expected_docstring_return["since"] = None
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
@@ -180,7 +180,7 @@ class TestParseDocstring_Since(unittest.TestCase):
 
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a multiline description. It tells what this function does."
-        expected_docstring_return["since"] = False
+        expected_docstring_return["since"] = None
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
 

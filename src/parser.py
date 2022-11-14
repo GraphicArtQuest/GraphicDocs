@@ -42,7 +42,7 @@ def parse_docstring(docstring: str) -> dict:
     parameters = []
     private = False # If False, this implicitly makes this a public module
     returns = ""
-    since = False
+    since = None
     throws = []
     version = None
 
@@ -344,7 +344,7 @@ def parse_docstring(docstring: str) -> dict:
 
         if since_desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
             return since_desc.strip()
-        return False
+        return None
    
     def get_throws() -> None:
         """Goes through the doc string and looks for exceptions annotated by the @throws tag"""
