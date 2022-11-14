@@ -9,6 +9,7 @@ import unittest
 
 from tests.test_parse_docstring_example import TestParseDocstring_Examples
 from tests.test_parse_docstring_param import TestParseDocstring_Param
+from tests.test_parse_docstring_private import TestParseDocstring_Private
 from tests.test_parse_docstring_returns import TestParseDocstring_Returns
 from tests.test_parse_docstring_throws import TestParseDocstring_Throws
 from tests.test_parse_docstring import TestParseDocstring

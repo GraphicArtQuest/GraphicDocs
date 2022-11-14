@@ -18,6 +18,7 @@ def parse_docstring(docstring: str) -> dict:
 
         - @example
         - @param
+        - @private
         - @returns
         - @throws
     """
@@ -30,6 +31,7 @@ def parse_docstring(docstring: str) -> dict:
 
     examples = []
     parameters = []
+    private = False
     returns = ""
     throws = []
 
@@ -176,6 +178,16 @@ def parse_docstring(docstring: str) -> dict:
         if parameter_name != "":   # Final catch for parameters not added yet
             add_parameter(parameter_name, parameter_description)
     
+    def get_private() -> None:
+        """Goes through the doc string and looks for a @private tag"""
+
+        for line in parsed:
+
+            if line.strip() == "@private":
+                return True
+        
+        return False
+
     def get_returns() -> str:
         """Goes through the doc string and looks for the final return value annotated by the @returns tag"""
         return_desc = ""
@@ -280,6 +292,7 @@ def parse_docstring(docstring: str) -> dict:
     # Parse Tags (Alphabetical Order)
     get_examples()
     get_parameters()
+    private = get_private()
     returns = get_returns()
     get_throws()
 
@@ -289,6 +302,7 @@ def parse_docstring(docstring: str) -> dict:
         # Tags (Alphabetical Order)
         "examples": examples,
         "parameters": parameters,
+        "private": private,
         "returns": returns,
         "throws": throws,
     }
