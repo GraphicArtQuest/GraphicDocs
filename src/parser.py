@@ -19,6 +19,7 @@ def parse_docstring(docstring: str) -> dict:
         - @example
         - @param
         - @private
+        - @public
         - @returns
         - @throws
     """
@@ -31,7 +32,7 @@ def parse_docstring(docstring: str) -> dict:
 
     examples = []
     parameters = []
-    private = False
+    private = False # If False, this implicitly makes this a public module
     returns = ""
     throws = []
 
@@ -180,6 +181,8 @@ def parse_docstring(docstring: str) -> dict:
     
     def get_private() -> None:
         """Goes through the doc string and looks for a @private tag"""
+        # Note: Because the parser assumes public by default and private takes precedence over public, there is no need
+        #   for an additional @public tag search. Lack of a @private tag indicates it is public.
 
         for line in parsed:
 
