@@ -7,7 +7,7 @@ from src.parser import parse_docstring
 class TestParseDocstring_Deprecated(unittest.TestCase):
 
     ###############################################################
-    # Returns
+    # Deprecated
     ###############################################################
     def test_only_deprecated_tag_only_value(self):
 
