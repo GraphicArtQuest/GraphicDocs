@@ -95,8 +95,8 @@ def parse_docstring(docstring: str) -> dict:
             
             If no description is provided, the returned value will be `True`, otherwise it will be the provided string.
         """
-        deprecated_desc = ""
-        record_deprecated_desc = False
+        desc = ""
+        record_desc = False # Used as a flag to tell if in the process of recording a block of description text
         found_deprecated = False
 
         for line in parsed:
@@ -105,31 +105,31 @@ def parse_docstring(docstring: str) -> dict:
             if stripped_line[0:11] == "@deprecated":
                 # Start a new @deprecated check.
                 # Only the last @deprecated should work, so no need to check if we've already found one 
-                deprecated_desc = deprecated_desc.strip()
-                record_deprecated_desc = True
+                desc = desc.strip()
+                record_desc = True
                 found_deprecated = True
                 
                 # We have encountered a new deprecated description, start recording the info
-                deprecated_desc = stripped_line[11:len(stripped_line)]
+                desc = stripped_line[11:len(stripped_line)]
                 continue
 
-            if deprecated_desc != "" and stripped_line[0:1] == "@" and record_deprecated_desc:
+            if desc != "" and stripped_line[0:1] == "@" and record_desc:
                 # Already started parsing a deprecation string, but now encountering a new tag
-                deprecated_desc = deprecated_desc.strip()
-                record_deprecated_desc = False
+                desc = desc.strip()
+                record_desc = False
                 continue
 
-            if deprecated_desc != "" and record_deprecated_desc:
+            if desc != "" and record_desc:
                 # Have found a deprecated tag already, and now its description has spilled on to another line
                 if stripped_line == "": # Add a paragraph break
-                    deprecated_desc += "\n"
-                elif deprecated_desc[-1:] == "\n": # Do not add an extra space for new paragraphs.
-                    deprecated_desc += stripped_line
+                    desc += "\n"
+                elif desc[-1:] == "\n": # Do not add an extra space for new paragraphs.
+                    desc += stripped_line
                 else:
-                    deprecated_desc += " " + stripped_line
+                    desc += " " + stripped_line
 
-        if deprecated_desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
-            return deprecated_desc.strip()
+        if desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
+            return desc.strip()
         elif found_deprecated:
             return True
         return False
@@ -270,38 +270,38 @@ def parse_docstring(docstring: str) -> dict:
 
     def get_returns() -> str:
         """Goes through the doc string and looks for the final return value annotated by the @returns tag"""
-        return_desc = ""
-        record_return_description = False
+        desc = ""
+        record_desc = False # Used as a flag to tell if in the process of recording a block of description text
 
         for line in parsed:
             stripped_line = line.strip()
             
             if stripped_line[0:9] == "@returns ":
                 # Start a new @returns check. Only the last @returns should work, so no check if we've already found one 
-                return_desc = return_desc.strip()
-                record_return_description = True
+                desc = desc.strip()
+                record_desc = True
                 
                 # We have encountered a new return description, start recording the info
-                return_desc = stripped_line[9:len(stripped_line)]
+                desc = stripped_line[9:len(stripped_line)]
                 continue
 
-            if return_desc != "" and stripped_line[0:1] == "@" and record_return_description:
+            if desc != "" and stripped_line[0:1] == "@" and record_desc:
                 # Already started parsing a parameter, but now encountering a new tag
-                return_desc = return_desc.strip()
-                record_return_description = False
+                desc = desc.strip()
+                record_desc = False
                 continue
 
-            if return_desc != "" and record_return_description:
+            if desc != "" and record_desc:
                 # Have found a returns tag already, and now its description has spilled on to another line
                 if stripped_line == "": # Add a paragraph break
-                    return_desc += "\n"
-                elif return_desc[-1:] == "\n": # Do not add an extra space for new paragraphs.
-                    return_desc += stripped_line
+                    desc += "\n"
+                elif desc[-1:] == "\n": # Do not add an extra space for new paragraphs.
+                    desc += stripped_line
                 else:
-                    return_desc += " " + stripped_line
+                    desc += " " + stripped_line
 
-        if return_desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
-            return return_desc.strip()
+        if desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
+            return desc.strip()
 
     def get_since() -> str:
         """
@@ -311,8 +311,8 @@ def parse_docstring(docstring: str) -> dict:
             If no description is provided or the tag is omitted, the returned value will remain `False`.
             Otherwise, it will be the provided string.
         """
-        since_desc = ""
-        record_since_desc = False
+        desc = ""
+        record_desc = False # Used as a flag to tell if in the process of recording a block of description text
 
         for line in parsed:
             stripped_line = line.strip()
@@ -320,30 +320,30 @@ def parse_docstring(docstring: str) -> dict:
             if stripped_line[0:6] == "@since":
                 # Start a new @since check.
                 # Only the last @since should work, so no need to check if we've already found one 
-                since_desc = since_desc.strip()
-                record_since_desc = True
+                desc = desc.strip()
+                record_desc = True
                 
                 # We have encountered a new since description, start recording the info
-                since_desc = stripped_line[6:len(stripped_line)]
+                desc = stripped_line[6:len(stripped_line)]
                 continue
 
-            if since_desc != "" and stripped_line[0:1] == "@" and record_since_desc:
+            if desc != "" and stripped_line[0:1] == "@" and record_desc:
                 # Already started parsing a since string, but now encountering a new tag
-                since_desc = since_desc.strip()
-                record_since_desc = False
+                desc = desc.strip()
+                record_desc = False
                 continue
 
-            if since_desc != "" and record_since_desc:
+            if desc != "" and record_desc:
                 # Have found a since tag already, and now its description has spilled on to another line
                 if stripped_line == "": # Add a paragraph break
-                    since_desc += "\n"
-                elif since_desc[-1:] == "\n": # Do not add an extra space for new paragraphs.
-                    since_desc += stripped_line
+                    desc += "\n"
+                elif desc[-1:] == "\n": # Do not add an extra space for new paragraphs.
+                    desc += stripped_line
                 else:
-                    since_desc += " " + stripped_line
+                    desc += " " + stripped_line
 
-        if since_desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
-            return since_desc.strip()
+        if desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
+            return desc.strip()
         return None
    
     def get_throws() -> None:
