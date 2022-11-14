@@ -155,6 +155,24 @@ class TestParseDocstring_Param(unittest.TestCase):
 
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
+    def test_only_single_parameter_description_spills_over_with_paragraph_breaks(self):
+        self.maxDiff = None
+        description_entry = """
+            @param test_param This is a description of a test parameter.
+            Its description goes onto a second line.
+
+            Additionally, it has three paragraphs. This is the first.
+
+            This is the second.
+            @param test_param2 This is a second test parameter.
+        """
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+        
+        returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["parameters"].append({"test_param": "This is a description of a test parameter. Its description goes onto a second line.\nAdditionally, it has three paragraphs. This is the first.\nThis is the second."})
+        expected_docstring_return["parameters"].append({"test_param2": "This is a second test parameter."})
+        self.assertDictEqual(expected_docstring_return, returned_dict)
+
 
     ###############################################################
     # Complex
@@ -165,7 +183,9 @@ class TestParseDocstring_Param(unittest.TestCase):
         description_entry = """
             @example
             print('test1')
-            @param my_test_parameter1 This is a description of a test parameter 1
+            @param my_test_parameter1 This is a description of a test parameter 1.
+
+            It has a second paragraph.
             @example
             print('test2')
             @param my_test_parameter2 This is a description of a test parameter 2
@@ -174,7 +194,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
         
         returned_dict = parse_docstring(description_entry)
-        expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
+        expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1.\nIt has a second paragraph."})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
         expected_docstring_return["examples"].append({"caption": None, "code": "print('test1')"})
         expected_docstring_return["examples"].append({"caption": None, "code": "print('test2')"})

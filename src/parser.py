@@ -166,7 +166,12 @@ def parse_docstring(docstring: str) -> dict:
 
             if parameter_name != "":
                 # Have found a parameter already, and now its description has spilled on to another line
-                parameter_description += " " + stripped_line
+                if stripped_line == "": # Add a paragraph break
+                    parameter_description += "\n"
+                elif parameter_description[-1:] == "\n": # Do not add an extra space for new paragraphs.
+                    parameter_description += stripped_line
+                else:
+                    parameter_description += " " + stripped_line
 
         if parameter_name != "":   # Final catch for parameters not added yet
             add_parameter(parameter_name, parameter_description)
