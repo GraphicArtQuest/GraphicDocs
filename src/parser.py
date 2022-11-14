@@ -42,20 +42,21 @@ def parse_docstring(docstring: str) -> dict:
     # Description
     ###############################################################
 
-    def find_description_end() -> int:
-        """Searches the docstring and finds which the first tag. The line before is where the description ends."""
-        i = 0
-        for line in parsed:
-            this_line = line.strip()
-            if this_line[0:1] == "@":
-                return i - 1
-            i += 1
-        
-        return i # No tags found, the entire thing is the description
-
     def get_description() -> str:
         """Parses the docstring up to the end of the description and formats it into paragraphs.
             Only goes up to the first tag, nothing after that gets recorded here."""
+            
+        def find_description_end() -> int:
+            """Searches the docstring and finds which the first tag. The line before is where the description ends."""
+            i = 0
+            for line in parsed:
+                this_line = line.strip()
+                if this_line[0:1] == "@":
+                    return i - 1
+                i += 1
+            
+            return i # No tags found, the entire thing is the description
+            
         parsed_desc = ""
         for i in range(0, find_description_end()):
             if parsed_desc != "" and parsed[i].strip() == "":   # Make sure the opening doesn't have a carriage returns
