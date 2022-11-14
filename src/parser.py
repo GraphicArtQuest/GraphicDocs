@@ -16,7 +16,10 @@ def parse_docstring(docstring: str) -> dict:
 
         Available Tags:
 
+        - @deprecated
         - @example
+        - @global
+        - @ignore
         - @param
         - @private
         - @public
@@ -30,6 +33,7 @@ def parse_docstring(docstring: str) -> dict:
 
     description = ""
 
+    deprecated = False
     examples = []
     is_global = False
     ignore = False
@@ -79,6 +83,52 @@ def parse_docstring(docstring: str) -> dict:
     ###############################################################
     # Tags
     ###############################################################
+
+    def get_deprecated() -> str:
+        """
+            Goes through the doc string and looks for the final deprecation value annotated by a @deprecated tag.
+            Only the last @deprecated tag will get recorded.
+            
+            If no description is provided, the returned value will be `True`, otherwise it will be the provided string.
+        """
+        deprecated_desc = ""
+        record_deprecated_desc = False
+        found_deprecated = False
+
+        for line in parsed:
+            stripped_line = line.strip()
+            
+            if stripped_line[0:11] == "@deprecated":
+                # Start a new @deprecated check.
+                # Only the last @deprecated should work, so no need to check if we've already found one 
+                deprecated_desc = deprecated_desc.strip()
+                record_deprecated_desc = True
+                found_deprecated = True
+                
+                # We have encountered a new deprecated description, start recording the info
+                deprecated_desc = stripped_line[11:len(stripped_line)]
+                continue
+
+            if deprecated_desc != "" and stripped_line[0:1] == "@" and record_deprecated_desc:
+                # Already started parsing a deprecation string, but now encountering a new tag
+                deprecated_desc = deprecated_desc.strip()
+                record_deprecated_desc = False
+                continue
+
+            if deprecated_desc != "" and record_deprecated_desc:
+                # Have found a deprecated tag already, and now its description has spilled on to another line
+                if stripped_line == "": # Add a paragraph break
+                    deprecated_desc += "\n"
+                elif deprecated_desc[-1:] == "\n": # Do not add an extra space for new paragraphs.
+                    deprecated_desc += stripped_line
+                else:
+                    deprecated_desc += " " + stripped_line
+
+        if deprecated_desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
+            return deprecated_desc.strip()
+        elif found_deprecated:
+            return True
+        return False
 
     def get_examples() -> None:
         """
@@ -316,6 +366,7 @@ def parse_docstring(docstring: str) -> dict:
     description = get_description()
 
     # Parse Tags (Alphabetical Order)
+    deprecated = get_deprecated()
     get_examples()
     is_global = get_global()
     ignore = get_ignore()
@@ -328,6 +379,7 @@ def parse_docstring(docstring: str) -> dict:
         "description": description,
 
         # Tags (Alphabetical Order)
+        "deprecated": deprecated,
         "examples": examples,
         "global": is_global,
         "ignore": ignore,

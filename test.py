@@ -7,6 +7,7 @@ takes care of running all tests.
 import os
 import unittest
 
+from tests.test_parse_docstring_deprecated import TestParseDocstring_Deprecated
 from tests.test_parse_docstring_example import TestParseDocstring_Examples
 from tests.test_parse_docstring_global import TestParseDocstring_Global
 from tests.test_parse_docstring_ignore import TestParseDocstring_Ignore
