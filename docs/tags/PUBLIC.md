@@ -55,4 +55,5 @@ def sayHello(name: str, age: int) -> str:
 
 ## Related
 
+- `@ignore`
 - `@private`

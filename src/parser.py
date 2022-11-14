@@ -31,6 +31,7 @@ def parse_docstring(docstring: str) -> dict:
     description = ""
 
     examples = []
+    ignore = False
     parameters = []
     private = False # If False, this implicitly makes this a public module
     returns = ""
@@ -56,7 +57,7 @@ def parse_docstring(docstring: str) -> dict:
                 i += 1
             
             return i # No tags found, the entire thing is the description
-            
+
         parsed_desc = ""
         for i in range(0, find_description_end()):
             if parsed_desc != "" and parsed[i].strip() == "":   # Make sure the opening doesn't have a carriage returns
@@ -125,6 +126,16 @@ def parse_docstring(docstring: str) -> dict:
         
         if code_block is not None:   # Final catch for examples not added yet
             add_example(code_block, caption)
+
+    def get_ignore() -> None:
+        """Goes through the doc string and looks for an @ignore tag"""
+
+        for line in parsed:
+
+            if line.strip() == "@ignore":
+                return True
+        
+        return False
 
     def get_parameters() -> None:
         """Goes through the doc string and looks for parameters annotated by the @param tag"""
@@ -295,6 +306,7 @@ def parse_docstring(docstring: str) -> dict:
 
     # Parse Tags (Alphabetical Order)
     get_examples()
+    ignore = get_ignore()
     get_parameters()
     private = get_private()
     returns = get_returns()
@@ -305,6 +317,7 @@ def parse_docstring(docstring: str) -> dict:
 
         # Tags (Alphabetical Order)
         "examples": examples,
+        "ignore": ignore,
         "parameters": parameters,
         "private": private,
         "returns": returns,
