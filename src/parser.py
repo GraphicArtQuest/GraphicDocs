@@ -263,7 +263,12 @@ def parse_docstring(docstring: str) -> dict:
             if error_description is not None or error_type is not None:
                 # Have found a parameter already, and now its description has spilled on to another line
                 if error_description is not None:
-                    error_description += " " + stripped_line
+                    if stripped_line == "": # Add a paragraph break
+                        error_description += "\n"
+                    elif error_description[-1:] == "\n": # Do not add an extra space for new paragraphs.
+                        error_description += stripped_line
+                    else:
+                        error_description += " " + stripped_line
 
         if error_description is not None or error_type is not None:   # Final catch for parameters not added yet
             add_throw(error_type, error_description)

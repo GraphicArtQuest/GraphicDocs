@@ -135,7 +135,27 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return["throws"].append({"type": None, "description": "[CustomErrorType] This is a description of a thrown error with a specified error type"})
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
+    
+    def test_only_throws_should_recognize_paragraph_breaks_in_description(self):
+        self.maxDiff = None
+        description_entry = """
+            @throws [CustomErrorType] This is a description of a thrown error with a specified error type.
+
+            The description has two paragraphs.
+            @throws This is an error description that has no type.
+
+            It also has two paragraphs.
+            @throws [AnotherErrorType] This is a third error with only one line.
+            """
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+
+        returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"].append({"type": "CustomErrorType", "description": "This is a description of a thrown error with a specified error type.\nThe description has two paragraphs."})
+        expected_docstring_return["throws"].append({"type": None, "description": "This is an error description that has no type.\nIt also has two paragraphs."})
+        expected_docstring_return["throws"].append({"type": "AnotherErrorType", "description": "This is a third error with only one line."})
         
+        self.assertDictEqual(expected_docstring_return, returned_dict)
+
     ###############################################################
     # Complex
     ###############################################################
