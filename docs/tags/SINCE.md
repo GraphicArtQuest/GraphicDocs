@@ -27,7 +27,7 @@ def sayHello(name: str, age: int) -> str:
     return ("Hello, " + name + ", I am " + str(age) + " years old.")
 ```
 
-A deprecated function with a description.
+A function with a `since` description.
 
 ```python
 def sayHello(name: str, age: int) -> None:
@@ -61,3 +61,4 @@ def sayHello(name: str, age: int) -> None:
 ## Related
 
 - `@deprecated`
+- `@version`
