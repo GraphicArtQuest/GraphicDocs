@@ -1,4 +1,4 @@
-# @deprecated
+# @since
 
 ## Table of Contents
 
@@ -8,9 +8,9 @@
 
 ## Overview
 
-The `@deprecated` tag in the docstring marks that object as having been deprecated. You can include text following the tag to describe more about the deprecation.
+The `@since` tag in the docstring marks that object was included in a particular version.
 
-If more than one `@deprecated` tag is used, only the last one in the docstring will get recorded.
+If more than one `@since` tag is used, only the last one in the docstring will get recorded.
 
 ## Examples
 
@@ -22,7 +22,7 @@ def sayHello(name: str, age: int) -> str:
         @param name This is the name of the person you are trying to talk to
         @param age This is your current age
         @returns A simple string saying hi to your friend, and how old you are.
-        @deprecated
+        @since 1.2.0
     """
     return ("Hello, " + name + ", I am " + str(age) + " years old.")
 ```
@@ -37,27 +37,27 @@ def sayHello(name: str, age: int) -> None:
         @param age This is your current age
         @returns A simple string saying hi to your friend, and how old you are.
         If needed, you can make this as long of a description as you want.
-        @deprecated since version 1.2.5
+        @since version 1.2.5
     """
     return ("Hello, " + name + ", I am " + str(age) + " years old.")
 ```
 
-A deprecated function with a description overridden by another `@deprecated` tag. In this example, the `deprecated` value will be 2.0.0 instead of 1.2.5 because of the later tag.
+A function with a `@since` tag description overridden by another `@since` tag. In this example, the `since` value will be the string `2.0.0` instead of `release version 1.2.5` because of the later tag.
 
 ```python
 def sayHello(name: str, age: int) -> None:
     """
-        @deprecated since version 1.2.5
+        @since release version 1.2.5
         @param name This is the name of the person you are trying to talk to.
         If needed, your description can spill over onto a second line, or more if needed.
         @param age This is your current age
         @returns A simple string saying hi to your friend, and how old you are.
         If needed, you can make this as long of a description as you want.
-        @deprecated since version 2.0.0
+        @since 2.0.0
     """
     return ("Hello, " + name + ", I am " + str(age) + " years old.")
 ```
 
 ## Related
 
-- `@since`
+- `@deprecated`

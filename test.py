@@ -16,6 +16,7 @@ from tests.test_parse_docstring_private import TestParseDocstring_Private
 from tests.test_parse_docstring_public import TestParseDocstring_Public
 from tests.test_parse_docstring_returns import TestParseDocstring_Returns
 from tests.test_parse_docstring_throws import TestParseDocstring_Throws
+from tests.test_parse_docstring_since import TestParseDocstring_Since
 from tests.test_parse_docstring import TestParseDocstring
 
 if __name__ == '__main__':

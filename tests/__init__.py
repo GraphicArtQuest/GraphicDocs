@@ -8,5 +8,6 @@ blank_parse_docstring_return = {    # A blank template
     "parameters": [],
     "private": False,
     "returns": None,
+    "since": False,
     "throws": []
 }

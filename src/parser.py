@@ -24,6 +24,7 @@ def parse_docstring(docstring: str) -> dict:
         - @private
         - @public
         - @returns
+        - @since
         - @throws
     """
 
@@ -40,6 +41,7 @@ def parse_docstring(docstring: str) -> dict:
     parameters = []
     private = False # If False, this implicitly makes this a public module
     returns = ""
+    since = False
     throws = []
 
     parsed = docstring.splitlines()
@@ -298,7 +300,50 @@ def parse_docstring(docstring: str) -> dict:
 
         if return_desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
             return return_desc.strip()
-    
+
+    def get_since() -> str:
+        """
+            Goes through the doc string and looks for the final since value annotated by a `@since` tag.
+            Only the last `@since` tag will get recorded.
+            
+            If no description is provided or the tag is omitted, the returned value will remain `False`.
+            Otherwise, it will be the provided string.
+        """
+        since_desc = ""
+        record_since_desc = False
+
+        for line in parsed:
+            stripped_line = line.strip()
+            
+            if stripped_line[0:6] == "@since":
+                # Start a new @since check.
+                # Only the last @since should work, so no need to check if we've already found one 
+                since_desc = since_desc.strip()
+                record_since_desc = True
+                
+                # We have encountered a new since description, start recording the info
+                since_desc = stripped_line[6:len(stripped_line)]
+                continue
+
+            if since_desc != "" and stripped_line[0:1] == "@" and record_since_desc:
+                # Already started parsing a since string, but now encountering a new tag
+                since_desc = since_desc.strip()
+                record_since_desc = False
+                continue
+
+            if since_desc != "" and record_since_desc:
+                # Have found a since tag already, and now its description has spilled on to another line
+                if stripped_line == "": # Add a paragraph break
+                    since_desc += "\n"
+                elif since_desc[-1:] == "\n": # Do not add an extra space for new paragraphs.
+                    since_desc += stripped_line
+                else:
+                    since_desc += " " + stripped_line
+
+        if since_desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
+            return since_desc.strip()
+        return False
+   
     def get_throws() -> None:
         """Goes through the doc string and looks for exceptions annotated by the @throws tag"""
         error_type = None
@@ -373,6 +418,7 @@ def parse_docstring(docstring: str) -> dict:
     get_parameters()
     private = get_private()
     returns = get_returns()
+    since = get_since()
     get_throws()
 
     return {
@@ -386,5 +432,6 @@ def parse_docstring(docstring: str) -> dict:
         "parameters": parameters,
         "private": private,
         "returns": returns,
+        "since": since,
         "throws": throws,
     }
