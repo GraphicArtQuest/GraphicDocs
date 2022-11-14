@@ -154,3 +154,30 @@ class TestParseDocstring_Param(unittest.TestCase):
         expected_docstring_return["parameters"].append({"my_test_parameter": "This is a description of a test parameter"})
 
         self.assertDictEqual(expected_docstring_return, returned_dict)
+
+
+    ###############################################################
+    # Complex
+    ###############################################################
+
+    def test_good_param_detected_before_and_after_other_tags(self):
+        self.maxDiff = None
+        description_entry = """
+            @example
+            print('test1')
+            @param my_test_parameter1 This is a description of a test parameter 1
+            @example
+            print('test2')
+            @param my_test_parameter2 This is a description of a test parameter 2
+            @returns This is a description of the return value
+        """
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+        
+        returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
+        expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
+        expected_docstring_return["examples"].append({"caption": None, "code": "print('test1')"})
+        expected_docstring_return["examples"].append({"caption": None, "code": "print('test2')"})
+        expected_docstring_return["returns"] = "This is a description of the return value"
+
+        self.assertDictEqual(expected_docstring_return, returned_dict)

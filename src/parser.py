@@ -16,8 +16,10 @@ def parse_docstring(docstring: str) -> dict:
 
         Available Tags:
 
+        - @example
         - @param
         - @returns
+        - @throws
     """
 
     # Guard clause
@@ -26,11 +28,16 @@ def parse_docstring(docstring: str) -> dict:
 
     description = ""
 
+    examples = []
     parameters = []
     returns = ""
     throws = []
 
     parsed = docstring.splitlines()
+
+    ###############################################################
+    # Description
+    ###############################################################
 
     def find_description_end() -> int:
         """Searches the docstring and finds which the first tag. The line before is where the description ends."""
@@ -61,6 +68,59 @@ def parse_docstring(docstring: str) -> dict:
             else:   # continue the sentence from the interrupted paragraph with a space separator
                 parsed_desc += " " + parsed[i].strip()
         return parsed_desc.strip()
+
+
+    ###############################################################
+    # Tags
+    ###############################################################
+
+    def get_examples() -> None:
+        """
+        Goes through the doc string and looks for examples annotated by the @example tag.
+        
+        Note: JSDoc example tag allows <caption> after this. This function does not support that at this time.
+        """
+        code_block = None
+        caption = ""
+        code_offset = 0
+
+        def add_example(code: str, capt: str) -> None:
+            """
+                Adds the example code to the examples dictionary entry.
+                Can have multiple examples, and each can be the exact same if desired.
+            """
+            nonlocal code_block
+
+            if capt == "":
+                capt = None
+            
+            examples.append({"caption": capt, "code": code.strip('\n')})
+            code_block = None
+
+        for line in parsed:
+
+            if line.strip()[0:8] == "@example":
+                if code_block is not None:
+                    # Previous example code block complete, about to start a new one
+                    add_example(code_block, caption)
+                
+                # We have encountered a new example, start recording the info
+                code_offset = re.search("@example", line).start()    # How many white spaces exist before the @example tag
+                code_block = ""
+
+                caption = line.strip()[9:len(line)]
+                continue
+
+            if code_block is not None and line.strip()[0:1] != "@":
+                code_block += line[code_offset:len(line)] + "\n"
+                continue
+            
+            if code_block is not None and line.strip()[0:1] == "@":  
+                # Already started parsing an example block, but now encountering a new tag
+                add_example(code_block, caption)
+        
+        if code_block is not None:   # Final catch for examples not added yet
+            add_example(code_block, caption)
 
     def get_parameters() -> None:
         """Goes through the doc string and looks for parameters annotated by the @param tag"""
@@ -114,29 +174,36 @@ def parse_docstring(docstring: str) -> dict:
     def get_returns() -> str:
         """Goes through the doc string and looks for the final return value annotated by the @returns tag"""
         return_desc = ""
+        record_return_description = False
 
         for line in parsed:
             stripped_line = line.strip()
             
             if stripped_line[0:9] == "@returns ":
-                if return_desc != "":
-                    # Previous returns description complete, about to start a new one
-                    return_desc = return_desc.strip()
+                # Start a new @returns check. Only the last @returns should work, so no check if we've already found one 
+                return_desc = return_desc.strip()
+                record_return_description = True
                 
                 # We have encountered a new return description, start recording the info
                 return_desc = stripped_line[9:len(stripped_line)]
                 continue
 
-            if return_desc != "" and stripped_line[0:1] == "@":
+            if return_desc != "" and stripped_line[0:1] == "@" and record_return_description:
                 # Already started parsing a parameter, but now encountering a new tag
                 return_desc = return_desc.strip()
+                record_return_description = False
                 continue
 
-            if return_desc != "":
-                # Have found a parameter already, and now its description has spilled on to another line
-                return_desc += " " + stripped_line
+            if return_desc != "" and record_return_description:
+                # Have found a returns tag already, and now its description has spilled on to another line
+                if stripped_line == "": # Add a paragraph break
+                    return_desc += "\n"
+                elif return_desc[-1:] == "\n": # Do not add an extra space for new paragraphs.
+                    return_desc += stripped_line
+                else:
+                    return_desc += " " + stripped_line
 
-        if return_desc != "":   # Final catch for parameters not added yet
+        if return_desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
             return return_desc.strip()
     
     def get_throws() -> None:
@@ -201,14 +268,16 @@ def parse_docstring(docstring: str) -> dict:
     description = get_description()
 
     # Parse Tags (Alphabetical Order)
+    get_examples()
     get_parameters()
     returns = get_returns()
     get_throws()
-    
+
     return {
         "description": description,
 
         # Tags (Alphabetical Order)
+        "examples": examples,
         "parameters": parameters,
         "returns": returns,
         "throws": throws,
