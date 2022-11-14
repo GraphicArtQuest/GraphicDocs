@@ -8,6 +8,7 @@ import os
 import unittest
 
 from tests.test_parse_docstring_example import TestParseDocstring_Examples
+from tests.test_parse_docstring_global import TestParseDocstring_Global
 from tests.test_parse_docstring_ignore import TestParseDocstring_Ignore
 from tests.test_parse_docstring_param import TestParseDocstring_Param
 from tests.test_parse_docstring_private import TestParseDocstring_Private
