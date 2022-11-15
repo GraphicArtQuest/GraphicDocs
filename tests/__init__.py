@@ -1,6 +1,7 @@
 blank_parse_docstring_return = {    # A blank template
     "description": "",
 
+    "author": None,
     "copyright": None,
     "deprecated": False,
     "examples": [],

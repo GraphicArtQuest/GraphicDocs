@@ -16,6 +16,7 @@ def parse_docstring(docstring: str) -> dict:
 
         Available Tags:
 
+        - @author
         - @copyright
         - @deprecated
         - @example
@@ -38,6 +39,7 @@ def parse_docstring(docstring: str) -> dict:
 
     description = ""
 
+    author = None
     copyright = None
     deprecated = False
     examples = []
@@ -93,6 +95,41 @@ def parse_docstring(docstring: str) -> dict:
     ###############################################################
     # Tags
     ###############################################################
+
+    def get_authors() -> None:
+        """Goes through the docstring and looks for authors annotated by the @author tag"""
+        authors_array = []
+        author_name = ""
+        author_email = ""
+
+        for line in parsed:
+            stripped_line = line.strip()
+
+            if stripped_line[0:8] == "@author ":
+                # We have encountered a new parameter, start recording the info
+                # START HERE!!!!!!!!!!!!!!!!!!!! Need to figure out how to make email start and end not throw errors
+                email_start = stripped_line.find("[", 9)
+                email_end = stripped_line.find("]", 9)
+
+                if email_start > 0 and email_end > 0:
+                    author_name = stripped_line[8:email_start - 1].strip()
+                    author_email = stripped_line[email_start + 1:email_end].strip()
+                else:
+                    author_name = stripped_line[8:len(stripped_line)].strip()
+                    author_email = None
+
+                # print ('zzzzzz', email_start, email_end, author_name, stripped_line[email_start + 1:email_end])
+
+                # parameter_name = stripped_line[8:8 + end_of_param_name]
+                # parameter_description = stripped_line[9 + end_of_param_name:len(stripped_line)]
+
+                authors_array.append({"name": author_name, "email": author_email})
+        
+        
+        if len(authors_array) > 0:
+            # print('qqqqqqq', authors_array)
+            return authors_array
+        return None
 
     def get_copyright() -> str:
         """
@@ -619,6 +656,7 @@ def parse_docstring(docstring: str) -> dict:
     description = get_description()
 
     # Parse Tags (Alphabetical Order)
+    authors = get_authors()
     copyright = get_copyright()
     deprecated = get_deprecated()
     get_examples()
@@ -637,6 +675,7 @@ def parse_docstring(docstring: str) -> dict:
         "description": description,
 
         # Tags (Alphabetical Order)
+        "author": authors,
         "copyright": copyright,
         "deprecated": deprecated,
         "examples": examples,

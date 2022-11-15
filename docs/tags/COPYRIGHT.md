@@ -41,4 +41,5 @@ def my_function() -> None:
 
 ## Related
 
+- `@author`
 - `@license`
