@@ -107,7 +107,6 @@ def parse_docstring(docstring: str) -> dict:
 
             if stripped_line[0:8] == "@author ":
                 # We have encountered a new parameter, start recording the info
-                # START HERE!!!!!!!!!!!!!!!!!!!! Need to figure out how to make email start and end not throw errors
                 email_start = stripped_line.find("[", 9)
                 email_end = stripped_line.find("]", 9)
 
@@ -118,16 +117,9 @@ def parse_docstring(docstring: str) -> dict:
                     author_name = stripped_line[8:len(stripped_line)].strip()
                     author_email = None
 
-                # print ('zzzzzz', email_start, email_end, author_name, stripped_line[email_start + 1:email_end])
-
-                # parameter_name = stripped_line[8:8 + end_of_param_name]
-                # parameter_description = stripped_line[9 + end_of_param_name:len(stripped_line)]
-
                 authors_array.append({"name": author_name, "email": author_email})
         
-        
         if len(authors_array) > 0:
-            # print('qqqqqqq', authors_array)
             return authors_array
         return None
 
