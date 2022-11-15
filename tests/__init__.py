@@ -11,5 +11,6 @@ blank_parse_docstring_return = {    # A blank template
     "returns": None,
     "since": None,
     "throws": [],
+    "todo": None,
     "version": None
 }
