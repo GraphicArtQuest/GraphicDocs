@@ -5,6 +5,7 @@ blank_parse_docstring_return = {    # A blank template
     "examples": [],
     "global": False,
     "ignore": False,
+    "license": None,
     "parameters": [],
     "private": False,
     "returns": None,
