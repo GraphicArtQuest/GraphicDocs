@@ -4,6 +4,7 @@
 
 - [Overview](#overview)
 - [Examples](#examples)
+- [Related](#related)
 
 ## Overview
 
@@ -65,3 +66,7 @@ def my_function() -> None:
         SOFTWARE.
     """
 ```
+
+## Related
+
+- `@copyright`

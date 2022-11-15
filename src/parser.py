@@ -16,6 +16,7 @@ def parse_docstring(docstring: str) -> dict:
 
         Available Tags:
 
+        - @copyright
         - @deprecated
         - @example
         - @global
@@ -37,6 +38,7 @@ def parse_docstring(docstring: str) -> dict:
 
     description = ""
 
+    copyright = None
     deprecated = False
     examples = []
     is_global = False
@@ -91,6 +93,57 @@ def parse_docstring(docstring: str) -> dict:
     ###############################################################
     # Tags
     ###############################################################
+
+    def get_copyright() -> str:
+        """
+            Goes through the doc string and looks for any `@copyright` tags. It returns either an array of all the tags
+            it found, or if there were no tags then it returns `None`.
+        """
+        desc = ""
+        record_desc = False # Used as a flag to tell if in the process of recording a block of description text
+        copyright_array = []
+
+        for line in parsed:
+            stripped_line = line.strip()
+            
+            if stripped_line[0:11] == "@copyright ":
+                # Start a new @copyright check. Only the last @returns should work, so no check if we've already found one 
+                if desc != "":
+                    # We were in the middle of parsing another copyright tag, add this one before continuing
+                    copyright_array.append(desc.strip("\n"))
+
+                desc = desc.strip()
+                record_desc = True
+                
+                # We have encountered a new return description, start recording the info
+                desc = stripped_line[11:len(stripped_line)]
+                continue
+
+            if desc != "" and stripped_line[0:1] == "@" and record_desc:
+                # Already started parsing a parameter, but now encountering a new tag
+                desc = desc.strip()
+                copyright_array.append(desc.strip("\n"))
+
+                desc = ""
+                record_desc = False
+                continue
+
+            if desc != "" and record_desc:
+                # Have found a returns tag already, and now its description has spilled on to another line
+                if stripped_line == "": # Add a paragraph break
+                    desc += "\n"
+                elif desc[-1:] == "\n": # Do not add an extra space for new paragraphs.
+                    desc += stripped_line
+                else:
+                    desc += " " + stripped_line
+
+        if desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
+            desc.strip()
+            copyright_array.append(desc.strip("\n"))
+        
+        if len(copyright_array) > 0:
+            return copyright_array
+        return None
 
     def get_deprecated() -> str:
         """
@@ -566,6 +619,7 @@ def parse_docstring(docstring: str) -> dict:
     description = get_description()
 
     # Parse Tags (Alphabetical Order)
+    copyright = get_copyright()
     deprecated = get_deprecated()
     get_examples()
     is_global = get_global()
@@ -583,6 +637,7 @@ def parse_docstring(docstring: str) -> dict:
         "description": description,
 
         # Tags (Alphabetical Order)
+        "copyright": copyright,
         "deprecated": deprecated,
         "examples": examples,
         "global": is_global,
