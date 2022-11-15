@@ -10,6 +10,16 @@ class TestParseDocstring_Todo(unittest.TestCase):
     # Todo
     ###############################################################
 
+    def test_only_todo_tag_no_inputs(self):
+
+        description_entry = """@todo  """
+
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+
+        returned_dict = parse_docstring(description_entry)
+        
+        self.assertDictEqual(expected_docstring_return, returned_dict)
+
     def test_only_todo_tag_with_good_example(self):
 
         description_entry = """@todo I need to do some stuff still."""
