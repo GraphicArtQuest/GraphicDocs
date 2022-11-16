@@ -165,3 +165,30 @@ class TestParseDocstring(unittest.TestCase):
         expected_docstring_return["description"] = "This description also has a bulleted list:\n1. One\n2. Two\n3. Three"
 
         self.assertDictEqual(expected_docstring_return, returned_dict)
+
+
+    ###############################################################
+    # Complex
+    ###############################################################
+
+    def test_description_ends_at_first_tag(self):
+        """The description should end at the first @ tag, regardless if it is separated by a blank line or not."""
+
+        self.maxDiff = None
+        """
+            Anything before the @namespace tag should not trigger the parser to pull out the namespace.
+        """
+
+        description_entry = """
+        This is a description of
+        what this function does.
+        @returns This is a description of the return value
+        """
+
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+
+        returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["description"] = "This is a description of what this function does."
+        expected_docstring_return["returns"] = "This is a description of the return value"
+
+        self.assertDictEqual(expected_docstring_return, returned_dict)
