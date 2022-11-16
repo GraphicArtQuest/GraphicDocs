@@ -1,4 +1,4 @@
-# @copyright
+# @namespace
 
 ## Table of Contents
 
@@ -52,3 +52,4 @@ def my_function() -> None:
 ## Related
 
 - `@global`
+- `@memberof`

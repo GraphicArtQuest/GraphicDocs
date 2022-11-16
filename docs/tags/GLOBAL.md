@@ -4,6 +4,7 @@
 
 - [Overview](#overview)
 - [Examples](#examples)
+- [Related](#related)
 
 ## Overview
 
@@ -22,3 +23,8 @@ def sayHello(name: str, age: int) -> str:
     """
     return ("Hello, " + name + ", I am " + str(age) + " years old.")
 ```
+
+## Related
+
+- `@memberof`
+- `@namespace`

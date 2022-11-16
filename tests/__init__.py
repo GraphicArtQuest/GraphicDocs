@@ -8,6 +8,7 @@ blank_parse_docstring_return = {    # A blank template
     "global": False,
     "ignore": False,
     "license": None,
+    "memberof": None,
     "namespaces": None,
     "parameters": [],
     "private": False,

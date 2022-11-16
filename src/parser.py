@@ -23,6 +23,7 @@ def parse_docstring(docstring: str) -> dict:
         - @global
         - @ignore
         - @license
+        - @memberof
         - @namespace
         - @param
         - @private
@@ -330,6 +331,33 @@ def parse_docstring(docstring: str) -> dict:
         if text is None and license_name is None:
             return None                
         return {"name": license_name, "text": text}
+
+    def get_memberof() -> None:
+        """
+        Goes through the docstring and looks for the `@memberof` tag.
+        
+        This tag is for a single line only, and takes one argument: the member name following the tag. This name must
+        be a valid Python variable name. Only unique names are added to the list.
+        
+        If the tag is not included or is invalid, it returns `None`.
+        """
+        member_array = []
+
+        for line in parsed:
+            stripped_line = line.strip()
+
+            if stripped_line[0:10] == "@memberof ":
+                
+                member = stripped_line[10:len(line)].strip()
+                
+                if member.isidentifier():
+                    if member not in member_array:  # Only add unique members
+                        member_array.append(member)
+                continue
+        
+        if len(member_array) > 0:
+            return member_array
+        return None
 
     def get_namespaces() -> None:
         """
@@ -710,6 +738,7 @@ def parse_docstring(docstring: str) -> dict:
     is_global = get_global()
     ignore = get_ignore()
     license = get_license()
+    memberof = get_memberof()
     namespaces = get_namespaces()
     get_parameters()
     private = get_private() # If False, this implicitly makes this a public module
@@ -730,6 +759,7 @@ def parse_docstring(docstring: str) -> dict:
         "global": is_global,
         "ignore": ignore,
         "license": license,
+        "memberof": memberof,
         "namespaces": namespaces,
         "parameters": parameters,
         "private": private,
