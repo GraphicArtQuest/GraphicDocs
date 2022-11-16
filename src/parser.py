@@ -38,23 +38,9 @@ def parse_docstring(docstring: str) -> dict:
     if not isinstance(docstring, str):
         return
 
-    description = ""
-
-    author = None
-    copyright = None
-    deprecated = False
     examples = []
-    is_global = False
-    ignore = False
-    license = None
-    namespaces = None
     parameters = []
-    private = False # If False, this implicitly makes this a public module
-    returns = ""
-    since = None
     throws = []
-    todo = None
-    version = None
 
     parsed = docstring.splitlines()
 
@@ -726,7 +712,7 @@ def parse_docstring(docstring: str) -> dict:
     license = get_license()
     namespaces = get_namespaces()
     get_parameters()
-    private = get_private()
+    private = get_private() # If False, this implicitly makes this a public module
     returns = get_returns()
     since = get_since()
     get_throws()
