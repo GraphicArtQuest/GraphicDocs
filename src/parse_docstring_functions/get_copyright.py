@@ -1,14 +1,16 @@
-def get_copyright(docstring: str) -> str:
+def get_copyright(docstring: str) -> str | None:
     """
         Goes through the doc string and looks for any `@copyright` tags. It returns either an array of all the tags
-        it found, or if there were no tags then it returns `None`.
+        it found, or if there were no tags then it returns `None`. For example:
+
+        - `@copyright 2022 John Doe. All rights reserved.`
     """
-    
+
     parsed = docstring.splitlines()
 
     desc = ""
     record_desc = False # Used as a flag to tell if in the process of recording a block of description text
-    copyright_array = []
+    copyrights = []
 
     for line in parsed:
         stripped_line = line.strip()
@@ -17,7 +19,7 @@ def get_copyright(docstring: str) -> str:
             # Start a new @copyright check. Only the last @returns should work, so no check if we've already found one 
             if desc != "":
                 # We were in the middle of parsing another copyright tag, add this one before continuing
-                copyright_array.append(desc.strip("\n"))
+                copyrights.append(desc.strip("\n"))
 
             desc = desc.strip()
             record_desc = True
@@ -29,7 +31,7 @@ def get_copyright(docstring: str) -> str:
         if desc != "" and stripped_line[0:1] == "@" and record_desc:
             # Already started parsing a parameter, but now encountering a new tag
             desc = desc.strip()
-            copyright_array.append(desc.strip("\n"))
+            copyrights.append(desc.strip("\n"))
 
             desc = ""
             record_desc = False
@@ -46,8 +48,8 @@ def get_copyright(docstring: str) -> str:
 
     if desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
         desc.strip()
-        copyright_array.append(desc.strip("\n"))
+        copyrights.append(desc.strip("\n"))
     
-    if len(copyright_array) > 0:
-        return copyright_array
+    if len(copyrights) > 0:
+        return copyrights
     return None
