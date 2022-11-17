@@ -86,7 +86,8 @@ class TestParseDocstring_Returns(unittest.TestCase):
         expected_docstring_return["returns"] = None
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
-        
+
+
     ###############################################################
     # Complex
     ###############################################################
@@ -108,7 +109,7 @@ class TestParseDocstring_Returns(unittest.TestCase):
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
         expected_docstring_return["returns"] = "This is a description of the return value"
-        
+
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
     def test_returns_value_between_parameters(self):
@@ -129,7 +130,7 @@ class TestParseDocstring_Returns(unittest.TestCase):
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
         expected_docstring_return["returns"] = "This is a description of the return value"
-        
+
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
     def test_returns_value_between_parameters_with_final_returns_at_end(self):
@@ -150,7 +151,7 @@ class TestParseDocstring_Returns(unittest.TestCase):
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
         expected_docstring_return["returns"] = "This is a my actual returns value"
-        
+
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
     def test_returns_value_after_parameters_with_multi_line_returns(self):
@@ -168,12 +169,12 @@ class TestParseDocstring_Returns(unittest.TestCase):
             @param my_test_parameter2 This is a description of a test parameter 2
         """
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
-        
+
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a multiline description. It tells what this function does."
         expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1. This parameter has two lines."})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
         expected_docstring_return["returns"] = "This is a description of the return value. It goes on to multiple lines.\nThere is even a paragraph break."
-        
+
         self.assertDictEqual(expected_docstring_return, returned_dict)

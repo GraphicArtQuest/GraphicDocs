@@ -1,5 +1,14 @@
-def get_returns(docstring: str) -> str:
-    """Goes through the doc string and looks for the final return value annotated by the @returns tag"""
+def get_returns(docstring: str) -> str | None:
+    """
+        Goes through the docstring and looks for the description of the return value annotated by the `@returns` tag.
+
+        If the docstring has more than one of these tags, the function will only record the last `@returns` tag found.
+        If the tag is not included or is left blank, it will return `None`.
+
+        For example:
+        - `@returns This is a description of what the return value does`
+            - Returns: `"This is a description of what the return value does"`
+    """
 
     parsed = docstring.splitlines()
 
@@ -8,7 +17,7 @@ def get_returns(docstring: str) -> str:
 
     for line in parsed:
         stripped_line = line.strip()
-        
+
         if stripped_line[0:9] == "@returns ":
             # Start a new @returns check. Only the last @returns should work, so no check if we've already found one 
             desc = desc.strip()
