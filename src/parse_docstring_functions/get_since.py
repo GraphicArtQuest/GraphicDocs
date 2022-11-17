@@ -1,10 +1,13 @@
-def get_since(docstring: str) -> str:
+def get_since(docstring: str) -> str | None:
     """
         Goes through the doc string and looks for the final since value annotated by a `@since` tag.
-        Only the last `@since` tag will get recorded.
-        
-        If no description is provided or the tag is omitted, the returned value will remain `False`.
-        Otherwise, it will be the provided string.
+        If the docstring has more than one of these tags, the function will only record the last `@since` tag found.
+
+        If the tag is not included or is left blank, it will return `None`. Otherwise, it will be the provided string.
+
+        For example:
+        - `@since v1.2.2`
+            - Returns: `"v1.2.2"`
     """
     desc = ""
 
