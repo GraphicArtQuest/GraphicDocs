@@ -3,6 +3,8 @@ A JSDoc style annotation method for Python scripts
 
 ## About
 
+**NOTE** This project is still in a development status and is making changes quickly.
+
 Inspired by the [JSDoc](https://github.com/jsdoc/jsdoc) style for documenting Javascript code.
 
 This project makes use of JSDOc style comments within Python docstrings combined with annotations to create better documentation for Python projects. Your Python scripts are parseable so you can write your own formatting code, or you can use the provided Markdown generator (in progress).

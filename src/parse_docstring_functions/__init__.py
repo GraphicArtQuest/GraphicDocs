@@ -1,0 +1,19 @@
+
+# Import the local functions that are only used for docstring validation
+from src.parse_docstring_functions.get_description import get_description
+from src.parse_docstring_functions.get_authors import get_authors
+from src.parse_docstring_functions.get_copyright import get_copyright
+from src.parse_docstring_functions.get_deprecated import get_deprecated
+#get_examples
+from src.parse_docstring_functions.get_global import get_global
+from src.parse_docstring_functions.get_ignore import get_ignore
+from src.parse_docstring_functions.get_license import get_license
+from src.parse_docstring_functions.get_memberof import get_memberof
+from src.parse_docstring_functions.get_namespaces import get_namespaces
+#get_parameters
+from src.parse_docstring_functions.get_private import get_private
+from src.parse_docstring_functions.get_returns import get_returns
+from src.parse_docstring_functions.get_since import get_since
+#get_throws
+from src.parse_docstring_functions.get_todo import get_todo
+from src.parse_docstring_functions.get_version import get_version
