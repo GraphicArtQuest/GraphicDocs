@@ -1,12 +1,15 @@
-def get_version(docstring: str) -> str:
+def get_version(docstring: str) -> str | None:
     """
-        Goes through the doc string and looks for the final version value annotated by a `@version` tag.
-        Only the last `@version` tag will get recorded.
-        
-        If no description is provided or the tag is omitted, the returned value will remain `None`.
-        Otherwise, it will be the provided string.
+        Goes through the docstring and looks for the version value of an object as annotated by a `@version` tag.
+
+        If the docstring has more than one of these tags, the function will only record the last `@version` tag found.
+        If the tag is not included or is left blank, it will return `None`.
+
+        For example:
+        - `@version v1.2.2`
+            - Returns: `"v1.2.2"`
     """
-    
+
     parsed = docstring.splitlines()
 
     desc = ""
