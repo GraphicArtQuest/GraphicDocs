@@ -1,6 +1,6 @@
 def get_copyright(docstring: str) -> list[str] | None:
     """
-        Goes through the doc string and looks for any `@copyright` tags. It returns either an array of all the tags
+        Goes through the docstring and looks for any `@copyright` tags. It returns either an array of all the tags
         it found, or if there were no tags then it returns `None`. For example:
 
         - `@copyright 2022 John Doe. All rights reserved.`

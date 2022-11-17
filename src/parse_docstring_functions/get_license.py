@@ -1,9 +1,9 @@
 def get_license(docstring: str) -> dict[str | None, str | None] | None:
     """
-        Goes through the doc string and looks for the final license value annotated by a `@license` tag.
+        Goes through the docstring and looks for the final license value annotated by a `@license` tag.
         If the docstring has more than one of these tags, the function will only record the last `@license` tag found.
 
-        The license name is everything on the first line following the `@license ` tag, and the text is everything
+        The license name is everything on the first line following the `@license` tag, and the text is everything
         on the subsequent lines up until the next tag or the end of the docstring.
 
         If both name and text are provided, the returned object has both values.

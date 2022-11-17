@@ -2,7 +2,7 @@ import re
 
 def get_parameters(docstring: str) -> list[dict[str]] | None:
     """
-        Goes through the doc string and looks for parameters annotated by the `@param` tag.
+        Goes through the docstring and looks for parameters annotated by the `@param` tag.
 
         If no tags are found, it returns `None`. Otherwise, it returns a list of dicts. Each dict has a single key
         with the name of the parameter, and the key value is the description of what that parameter does.

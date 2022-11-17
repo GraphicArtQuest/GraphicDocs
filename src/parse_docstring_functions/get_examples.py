@@ -2,7 +2,7 @@ import re
 
 def get_examples(docstring: str) -> list[dict[str | None, str]] | None:
     """
-        Goes through the doc string and looks for examples annotated by the @example tag.
+        Goes through the docstring and looks for examples annotated by the `@example` tag.
 
         If no examples are found, it returns `None`. Otherwise, it returns a list of dictionaries with keys
         `caption` and `code`. You can include as many examples as you need to.

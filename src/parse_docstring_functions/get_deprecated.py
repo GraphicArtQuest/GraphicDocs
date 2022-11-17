@@ -1,6 +1,6 @@
 def get_deprecated(docstring: str) -> bool | str:
     """
-        Goes through the doc string and looks for the final deprecation value annotated by a @deprecated tag.
+        Goes through the docstring and looks for the final deprecation value annotated by a `@deprecated` tag.
         Only the last @deprecated tag will get recorded.
         
         If the tag is not included, this function returns `False`. If just the tag is included, it returns `True`.

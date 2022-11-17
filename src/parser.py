@@ -2,7 +2,7 @@ import src.parse_docstring_functions as parse_docstring_functions
 
 def parse_docstring(docstring: str) -> dict:
     """
-        Parses a doc string and returns a dict of the string formatted into component parts.
+        Parses a docstring and returns a dict of the string formatted into component parts.
         
         The description must be at the top. Everything before the first tag gets treated as description.
 

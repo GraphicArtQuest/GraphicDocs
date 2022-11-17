@@ -1,6 +1,6 @@
 def get_since(docstring: str) -> str | None:
     """
-        Goes through the doc string and looks for the final since value annotated by a `@since` tag.
+        Goes through the docstring and looks for the final since value annotated by a `@since` tag.
         If the docstring has more than one of these tags, the function will only record the last `@since` tag found.
 
         If the tag is not included or is left blank, it will return `None`. Otherwise, it will be the provided string.

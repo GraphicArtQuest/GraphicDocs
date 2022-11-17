@@ -1,6 +1,7 @@
 def get_authors(docstring: str) -> list[dict[str | None, str | None]] | None:
     """
-        Goes through the docstring and looks for authors annotated by the @author tag.
+        Goes through the docstring and looks for authors annotated by the `@author` tag. You can add as many of these
+        tags as needed.
 
         If no authors are found, it returns `None`. Otherwise, it returns a list of dictionaries with keys
         `name` and `email`. Either author name or email may be left blank, which will return that key as `None`.

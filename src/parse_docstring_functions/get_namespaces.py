@@ -1,6 +1,6 @@
 def get_namespaces(docstring: str) -> list[dict[str, str | None]] | None:
     """
-    Goes through the doc string and looks for namespaces annotated by the `@namespace` tag.
+    Goes through the docstring and looks for namespaces annotated by the `@namespace` tag.
     
     If no `@namespace` tag found, or an invalid `@namespace` tag(s), it returns `None`. Otherwise, it returns a dict
     with keys `name` and `description`.
