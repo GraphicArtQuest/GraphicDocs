@@ -1,8 +1,24 @@
 import re
 
-def get_throws(docstring: str) -> None:
-    """Goes through the doc string and looks for exceptions annotated by the @throws tag"""
-    
+def get_throws(docstring: str) -> list[dict[str | None, str | None]] | None:
+    """
+        Goes through the docstring and looks for exceptions annotated by the `@throws` tag.
+
+        If no tags are found, it returns `None`. Otherwise, it returns a list of dicts with keys `type` and
+        `description`. You can include as many exceptions as you need to.
+
+        The type is enclosed in brackets immediately following the tag, and is optional. The description of why that
+        exception occurred is all of the text following, and is also optional.
+
+        For example:
+        - `@throws A description of an error`
+            - Returns: `{"type": None, "description": "A description of an error"}`
+        - `@throws [AttributeError]`
+            - Returns: `{"type": "AttributeError", "description": None}`
+        - `@throws [MyCustomErrorType] A description of what would have caused this error`
+            - Returns: `{"type": "MyCustomErrorType", "description": "A description of what would have caused this error"}`
+    """
+
     parsed = docstring.splitlines()
 
     throws = []
