@@ -30,4 +30,7 @@ def get_description(docstring: str) -> str:
             parsed_desc += "\n" + parsed[i].strip()[4:len(parsed[i].strip())]
         else:   # continue the sentence from the interrupted paragraph with a space separator
             parsed_desc += " " + parsed[i].strip()
+    
+    if parsed_desc.strip() == "":
+        return None
     return parsed_desc.strip()
