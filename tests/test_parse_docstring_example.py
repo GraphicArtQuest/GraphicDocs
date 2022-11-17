@@ -89,6 +89,19 @@ class TestParseDocstring_Examples(unittest.TestCase):
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
+    def test_only_example_tag_with_just_caption(self):
+
+        description_entry = """
+        @example This is an example with only a caption. It should return nothing.
+        """
+
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+
+        returned_dict = parse_docstring(description_entry)
+        
+        self.assertDictEqual(expected_docstring_return, returned_dict)
+
+
     ###############################################################
     # Complex
     ###############################################################
