@@ -10,7 +10,7 @@ from src.parse_docstring_functions.get_ignore import get_ignore
 from src.parse_docstring_functions.get_license import get_license
 from src.parse_docstring_functions.get_memberof import get_memberof
 from src.parse_docstring_functions.get_namespaces import get_namespaces
-#get_parameters
+from src.parse_docstring_functions.get_parameters import get_parameters
 from src.parse_docstring_functions.get_private import get_private
 from src.parse_docstring_functions.get_returns import get_returns
 from src.parse_docstring_functions.get_since import get_since

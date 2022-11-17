@@ -10,7 +10,7 @@ blank_parse_docstring_return = {    # A blank template
     "license": None,
     "memberof": None,
     "namespaces": None,
-    "parameters": [],
+    "parameters": None,
     "private": False,
     "returns": None,
     "since": None,

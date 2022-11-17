@@ -104,6 +104,7 @@ class TestParseDocstring_Returns(unittest.TestCase):
         
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a multiline description. It tells what this function does."
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
         expected_docstring_return["returns"] = "This is a description of the return value"
@@ -124,6 +125,7 @@ class TestParseDocstring_Returns(unittest.TestCase):
         
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a multiline description. It tells what this function does."
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
         expected_docstring_return["returns"] = "This is a description of the return value"
@@ -144,6 +146,7 @@ class TestParseDocstring_Returns(unittest.TestCase):
         
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a multiline description. It tells what this function does."
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
         expected_docstring_return["returns"] = "This is a my actual returns value"
@@ -168,6 +171,7 @@ class TestParseDocstring_Returns(unittest.TestCase):
         
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a multiline description. It tells what this function does."
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1. This parameter has two lines."})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
         expected_docstring_return["returns"] = "This is a description of the return value. It goes on to multiple lines.\nThere is even a paragraph break."

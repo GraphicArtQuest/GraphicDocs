@@ -17,6 +17,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
         
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter": "This is a description of a test parameter"})
 
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -29,6 +30,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
         
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
 
@@ -46,6 +48,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a multiline description. It tells what this function does."
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
 
@@ -63,6 +66,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a multiline description. It tells what this function does."
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
 
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -82,6 +86,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a multiline description. It tells what this function does."
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
 
@@ -101,6 +106,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a multiline description. It tells what this function does."
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a multi line test parameter 1 with a third line and a fourth line."})
 
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -113,6 +119,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
         
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 2 but misnamed so it overwrote"})
 
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -125,6 +132,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
         
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
 
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -138,6 +146,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
         
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1"})
         expected_docstring_return["parameters"].append({"my_test_parameter3": "This is a description of a test parameter 3"})
 
@@ -151,6 +160,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
         
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter": "This is a description of a test parameter"})
 
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -169,6 +179,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
         
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"test_param": "This is a description of a test parameter. Its description goes onto a second line.\nAdditionally, it has three paragraphs. This is the first.\nThis is the second."})
         expected_docstring_return["parameters"].append({"test_param2": "This is a second test parameter."})
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -194,6 +205,7 @@ class TestParseDocstring_Param(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
         
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"my_test_parameter1": "This is a description of a test parameter 1.\nIt has a second paragraph."})
         expected_docstring_return["parameters"].append({"my_test_parameter2": "This is a description of a test parameter 2"})
         expected_docstring_return["examples"] = []

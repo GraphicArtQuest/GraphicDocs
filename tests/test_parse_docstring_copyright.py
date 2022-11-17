@@ -126,6 +126,7 @@ class TestParseDocstring_Copyright(unittest.TestCase):
         expected_docstring_return["copyright"].append("Some stuff")
         expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": None, "description": "An error with no type 1"})
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"MyParam": "This is a param description"})
         expected_docstring_return["parameters"].append({"SecondParamName": "This is another param description"})
         expected_docstring_return["returns"] = "This is the ultimate return text"
@@ -158,6 +159,7 @@ class TestParseDocstring_Copyright(unittest.TestCase):
 
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This is a description."
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"the_var": "A variable of any type"})
         expected_docstring_return["returns"] = "This is an overriding returns tag"
         expected_docstring_return["copyright"] = []

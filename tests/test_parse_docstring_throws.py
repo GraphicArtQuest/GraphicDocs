@@ -203,7 +203,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return["throws"].append({"type": "AnotherErrorType", "description": "A Repeat of Before 2"})
         expected_docstring_return["throws"].append({"type": "YetAnotherError", "description": "A Repeat of Before 3"})
         expected_docstring_return["throws"].append({"type": None, "description": "An error with no type 2"})
-
+        expected_docstring_return["parameters"] = []
         expected_docstring_return["parameters"].append({"MyParam": "This is a param description"})
         expected_docstring_return["parameters"].append({"MyParam2": "This is another param description"})
         
