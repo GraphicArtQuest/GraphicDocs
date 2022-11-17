@@ -27,8 +27,8 @@ def get_authors(docstring: str) -> list[dict[str | None, str | None]] | None:
 
         if stripped_line[0:8] == "@author ":
             # We have encountered a new author, start recording the info
-            email_start = stripped_line.find("[", 9)
-            email_end = stripped_line.find("]", 9)
+            email_start = stripped_line.find("[", 0)
+            email_end = stripped_line.find("]", 0)
 
             if email_start > 0 and email_end > 0:
                 author_name = stripped_line[8:email_start - 1].strip()
@@ -36,6 +36,9 @@ def get_authors(docstring: str) -> list[dict[str | None, str | None]] | None:
             else:
                 author_name = stripped_line[8:len(stripped_line)].strip()
                 author_email = None
+
+            if author_name == "":
+                author_name = None
 
             authors.append({"name": author_name, "email": author_email})
     

@@ -233,6 +233,9 @@ class TestParseDocstring_Author(unittest.TestCase):
         expected_docstring_return["author"] = []
         expected_docstring_return["author"].append({"name": None, "email": "john.doe@somedomain.com"})
 
+        self.assertDictEqual(expected_docstring_return, returned_dict)
+
+
     # ###############################################################
     # # Complex
     # ###############################################################
