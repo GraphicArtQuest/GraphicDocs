@@ -1,6 +1,16 @@
-def get_description(docstring: str) -> str:
-    """Parses the docstring up to the end of the description and formats it into paragraphs.
-        Only goes up to the first tag, nothing after that gets recorded here."""
+def get_description(docstring: str) -> str | None:
+    """
+        Parses the docstring up to the end of the description (either the first line that has a tag as indicated by the
+        `@` symbol, or the end of the string) and formats it into paragraphs.
+        
+        This function will treat a blank line in a description as a carriage return and start a new paragraph.
+        Otherwise, it will treat subsequent lines as continuations of the previous line.
+
+        This function will also parse unordered lists if a line starts with either `"- "` or `"<ul>"` and will parse
+        ordered lists if it starts with `"<ol>"`.
+
+        If there is no description, it will return `None`.
+    """
     
     parsed = docstring.splitlines()
 
