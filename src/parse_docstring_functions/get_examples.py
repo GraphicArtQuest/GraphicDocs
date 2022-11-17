@@ -1,6 +1,6 @@
 import re
 
-def get_examples(docstring: str) -> dict[str | None, str] | None:
+def get_examples(docstring: str) -> list[dict[str | None, str]] | None:
     """
         Goes through the doc string and looks for examples annotated by the @example tag.
 

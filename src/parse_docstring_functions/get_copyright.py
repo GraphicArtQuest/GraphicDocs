@@ -1,4 +1,4 @@
-def get_copyright(docstring: str) -> str | None:
+def get_copyright(docstring: str) -> list[str] | None:
     """
         Goes through the doc string and looks for any `@copyright` tags. It returns either an array of all the tags
         it found, or if there were no tags then it returns `None`. For example:

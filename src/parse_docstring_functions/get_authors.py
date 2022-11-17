@@ -1,4 +1,4 @@
-def get_authors(docstring: str) -> dict[str | None, str | None] | None:
+def get_authors(docstring: str) -> list[dict[str | None, str | None]] | None:
     """
         Goes through the docstring and looks for authors annotated by the @author tag.
 
