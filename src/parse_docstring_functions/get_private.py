@@ -1,5 +1,10 @@
-def get_private(docstring: str) -> None:
-    """Goes through the doc string and looks for a @private tag"""
+def get_private(docstring: str) -> bool:
+    """
+        Goes through the doc string and looks for a @private tag. This indicates that this object should be treated as
+        private to the object and should not be part of the generated documentation.
+        
+        If found, it returns `True`. If omitted, it returns `False`.
+    """
 
     parsed = docstring.splitlines()
 
@@ -10,5 +15,5 @@ def get_private(docstring: str) -> None:
 
         if line.strip() == "@private":
             return True
-    
+
     return False
