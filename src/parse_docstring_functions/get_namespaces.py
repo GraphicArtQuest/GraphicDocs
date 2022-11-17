@@ -1,19 +1,25 @@
-def get_namespaces(docstring: str) -> None:
+def get_namespaces(docstring: str) -> list[dict[str, str | None]] | None:
     """
     Goes through the doc string and looks for namespaces annotated by the `@namespace` tag.
     
-    The namespace name is required following the tag, and must be a valid Python variable name.
+    If no `@namespace` tag found, or an invalid `@namespace` tag(s), it returns `None`. Otherwise, it returns a dict
+    with keys `name` and `description`.
 
-    It may have an optional description. If no description provided, this portion returns `None`.
+    The namespace name is required following the tag, and must be a valid Python variable name.
+    It may have an optional description. If no description provided, this key returns `None`.
     
-    If no `@namespace` tag found, or an invalid `@namespace` tag(s), it returns `None`.
+    For example:
+    - `@namespace Tools`
+        - Returns: {"name": "Tools", "description": None}
+    - `@namespace Tools.Wrenches`
+        - Returns: {"name": "Tools.Wrenches", "description": None}
     """
-    
+
     parsed = docstring.splitlines()
 
     description = None
     namespace = ""
-    namespace_array = []
+    namespaces = []
 
     def add_namespace(name: str, desc: str) -> None:
         """
@@ -31,7 +37,7 @@ def get_namespaces(docstring: str) -> None:
         name = name.strip()
 
         if name.isidentifier(): # Namespaces must follow Python variable name validation rules
-            namespace_array.append({"name": name, "description": desc})
+            namespaces.append({"name": name, "description": desc})
         description = None
 
     for line in parsed:
@@ -41,7 +47,7 @@ def get_namespaces(docstring: str) -> None:
             if description is not None:
                 # Previous namespace description complete, about to start a new one
                 add_namespace(namespace, description)
-            
+
             # We have encountered a new namespace, start recording the info
             description = ""
 
@@ -56,14 +62,14 @@ def get_namespaces(docstring: str) -> None:
             else:
                 description += " " + stripped_line
             continue
-        
+
         if description is not None and stripped_line[0:1] == "@":
             # Already started parsing a namespace, but now encountering a new tag
             add_namespace(namespace, description)
-    
+
     if description is not None:   # Final catch for namespaces not added yet
         add_namespace(namespace, description)
-    
-    if len(namespace_array) > 0:
-        return namespace_array
+
+    if len(namespaces) > 0:
+        return namespaces
     return None
