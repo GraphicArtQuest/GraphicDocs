@@ -1,7 +1,16 @@
 import re
 
-def get_parameters(docstring: str) -> None:
-    """Goes through the doc string and looks for parameters annotated by the @param tag"""
+def get_parameters(docstring: str) -> list[dict[str]] | None:
+    """
+        Goes through the doc string and looks for parameters annotated by the `@param` tag.
+
+        If no tags are found, it returns `None`. Otherwise, it returns a list of dicts. Each dict has a single key
+        with the name of the parameter, and the key value is the description of what that parameter does.
+
+        For example:
+        - `@param MyParam This is my parameter description.
+            - Returns: `{"MyParam": "This is my parameter description."}`
+    """
 
     parsed = docstring.splitlines()
 
@@ -33,7 +42,7 @@ def get_parameters(docstring: str) -> None:
             if parameter_name != "":
                 # Previous parameter complete, about to start a new one
                 add_parameter(parameter_name, parameter_description)
-            
+
             # We have encountered a new parameter, start recording the info
             end_of_param_name = re.search("[A-Za-z0-9] ", stripped_line[8:len(stripped_line)]).end()
 
