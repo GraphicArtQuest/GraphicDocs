@@ -1,9 +1,12 @@
-def get_todo(docstring: str) -> str:
+def get_todo(docstring: str) -> list[str] | None:
     """
-        Goes through the doc string and looks for any `@todo` tags. It returns either an array of all the tags
-        it found, or if there were no tags then it returns `None`.
+        Goes through the docstring and looks for any `@todo` tags. It returns a list of strings with all the tags
+        it found. If there were no tags, or the tags were empty, then it returns `None`.
+
+        For example:
+        - `@todo A description of some stuff to add in later`
     """
-    
+
     parsed = docstring.splitlines()
 
     desc = ""
@@ -47,7 +50,7 @@ def get_todo(docstring: str) -> str:
     if desc != "":   # If trying to .strip() the value 'None', then it will throw an error.
         desc.strip()
         todo_array.append(desc.strip("\n"))
-    
+
     if len(todo_array) > 0:
         return todo_array
     return None
