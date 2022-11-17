@@ -103,6 +103,22 @@ class TestParseDocstring_Todo(unittest.TestCase):
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
+    def test_only_todo_empty_tag_not_parsed(self):
+
+        description_entry = """
+        This is a function that does some stuff.
+
+        @todo 
+        """
+
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+
+        returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["description"] = "This is a function that does some stuff."
+        
+        self.assertDictEqual(expected_docstring_return, returned_dict)
+
+
     ###############################################################
     # Complex
     ###############################################################
@@ -171,6 +187,5 @@ class TestParseDocstring_Todo(unittest.TestCase):
         expected_docstring_return["examples"].append({"caption": None, "code": "print(myvar2)"})
         expected_docstring_return["examples"].append({"caption": "This one has a caption", "code": "print(myvar3)"})
         expected_docstring_return["examples"].append({"caption": None, "code": "print(myvar4)"})
-        
+
         self.assertDictEqual(expected_docstring_return, returned_dict)
-        
