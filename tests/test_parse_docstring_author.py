@@ -223,6 +223,15 @@ class TestParseDocstring_Author(unittest.TestCase):
 
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
+    def test_only_author_tag_name_just_email(self):
+
+        description_entry = """@author [john.doe@somedomain.com]"""
+
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+
+        returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["author"] = []
+        expected_docstring_return["author"].append({"name": None, "email": "john.doe@somedomain.com"})
 
     # ###############################################################
     # # Complex
