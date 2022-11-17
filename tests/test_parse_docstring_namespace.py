@@ -222,6 +222,7 @@ class TestParseDocstring_Namespace(unittest.TestCase):
 
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This one also has a description in it."
+        expected_docstring_return["examples"] = []
         expected_docstring_return["examples"].append({"caption": "Some caption text", "code": "# This is a comment within the example\nmyvar = 2\nif myvar == 2:\n    print(myvar)"})
         expected_docstring_return["throws"].append({"type": None, "description": "An error with no type 1"})
         expected_docstring_return["parameters"].append({"MyParam": "This is a param description"})
@@ -232,7 +233,7 @@ class TestParseDocstring_Namespace(unittest.TestCase):
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
-    def test_example_tag_multiple_examples_and_other_tags(self):
+    def test_example_tag_multiple_namespace_and_other_tags(self):
 
         description_entry = """
         This is a description.
@@ -262,6 +263,7 @@ class TestParseDocstring_Namespace(unittest.TestCase):
         expected_docstring_return["description"] = "This is a description."
         expected_docstring_return["parameters"].append({"the_var": "A variable of any type"})
         expected_docstring_return["returns"] = "This is an overriding returns tag"
+        expected_docstring_return["examples"] = []
         expected_docstring_return["examples"].append({"caption": None, "code": "print(myvar1)"})
         expected_docstring_return["examples"].append({"caption": None, "code": "print(myvar2)"})
         expected_docstring_return["examples"].append({"caption": "This one has a caption", "code": "print(myvar3)"})

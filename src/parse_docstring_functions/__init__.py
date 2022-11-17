@@ -4,7 +4,7 @@ from src.parse_docstring_functions.get_description import get_description
 from src.parse_docstring_functions.get_authors import get_authors
 from src.parse_docstring_functions.get_copyright import get_copyright
 from src.parse_docstring_functions.get_deprecated import get_deprecated
-#get_examples
+from src.parse_docstring_functions.get_examples import get_examples
 from src.parse_docstring_functions.get_global import get_global
 from src.parse_docstring_functions.get_ignore import get_ignore
 from src.parse_docstring_functions.get_license import get_license

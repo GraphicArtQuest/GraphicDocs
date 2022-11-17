@@ -291,6 +291,7 @@ class TestParseDocstring_Author(unittest.TestCase):
         expected_docstring_return["todo"].append("Some stuff")
         expected_docstring_return["todo"].append("Some more stuff and this @todo is part of it")
         expected_docstring_return["todo"].append("Some final stuff")
+        expected_docstring_return["examples"] = []
         expected_docstring_return["examples"].append({"caption": None, "code": "print(myvar1)"})
         expected_docstring_return["examples"].append({"caption": None, "code": "print(myvar2)"})
         expected_docstring_return["examples"].append({"caption": "This one has a caption", "code": "print(myvar3)"})

@@ -119,6 +119,7 @@ class TestParseDocstring_Ignore(unittest.TestCase):
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This one also has a description in it."
         expected_docstring_return["ignore"] = True
+        expected_docstring_return["examples"] = []
         expected_docstring_return["examples"].append({"caption": "Some caption text", "code": "# This is a comment within the example\nmyvar = 2\nif myvar == 2:\n    print(myvar)"})
         expected_docstring_return["throws"].append({"type": None, "description": "An error with no type 1"})
         expected_docstring_return["parameters"].append({"MyParam": "This is a param description"})
@@ -149,6 +150,7 @@ class TestParseDocstring_Ignore(unittest.TestCase):
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This one also has a description in it."
         expected_docstring_return["ignore"] = False
+        expected_docstring_return["examples"] = []
         expected_docstring_return["examples"].append({"caption": "Some caption text", "code": "# This is a comment within the example\nmyvar = 2\nif myvar == 2:\n    print(myvar)"})
         expected_docstring_return["throws"].append({"type": None, "description": "An error with no type 1"})
         expected_docstring_return["parameters"].append({"MyParam": "This is a param description"})
@@ -183,6 +185,7 @@ class TestParseDocstring_Ignore(unittest.TestCase):
         expected_docstring_return["description"] = "This one also has a description in it."
         expected_docstring_return["private"] = True
         expected_docstring_return["ignore"] = True
+        expected_docstring_return["examples"] = []
         expected_docstring_return["examples"].append({"caption": "Some caption text", "code": "# This is a comment within the example\nmyvar = 2\nif myvar == 2:\n    print(myvar)"})
         expected_docstring_return["throws"].append({"type": None, "description": "An error with no type 1"})
         expected_docstring_return["parameters"].append({"MyParam": "This is a param description"})

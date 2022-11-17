@@ -227,7 +227,7 @@ class TestParseDocstring_Version(unittest.TestCase):
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
-    def test_deprecated_value_between_parameters_with_final_deprecated_value_at_end(self):
+    def test_version_value_between_parameters_with_final_version_value_at_end(self):
         description_entry = """
             This is a multiline description.
             It tells what this function does.

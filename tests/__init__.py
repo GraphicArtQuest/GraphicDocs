@@ -4,7 +4,7 @@ blank_parse_docstring_return = {    # A blank template
     "author": None,
     "copyright": None,
     "deprecated": False,
-    "examples": [],
+    "examples": None,
     "global": False,
     "ignore": False,
     "license": None,

@@ -131,7 +131,7 @@ class TestParseDocstring_Todo(unittest.TestCase):
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
-    def test_example_tag_multiple_examples_and_other_tags(self):
+    def test_example_tag_multiple_todo_and_other_tags(self):
 
         description_entry = """
         This is a description.
@@ -163,6 +163,7 @@ class TestParseDocstring_Todo(unittest.TestCase):
         expected_docstring_return["todo"].append("Some stuff")
         expected_docstring_return["todo"].append("Some more stuff and this @todo is part of it")
         expected_docstring_return["todo"].append("Some final stuff")
+        expected_docstring_return["examples"] = []
         expected_docstring_return["examples"].append({"caption": None, "code": "print(myvar1)"})
         expected_docstring_return["examples"].append({"caption": None, "code": "print(myvar2)"})
         expected_docstring_return["examples"].append({"caption": "This one has a caption", "code": "print(myvar3)"})
