@@ -172,6 +172,27 @@ class TestParseDocstring_Namespace(unittest.TestCase):
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
 
+    def test_only_namespace_tag_no_name_does_not_add_namespace(self):
+        """
+            The parser only pulls out valid namespace information. The namespace has to have a name, or else it should
+            get ignored by the parser.
+        """
+
+        description_entry = """
+        @namespace
+        This is a description of a namespace without a name, and this namespace should not appear.
+        @namespace MyName
+        This is a valid namespace, and should be the only one returned.
+        """
+
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+
+        returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["namespaces"] = []
+        expected_docstring_return["namespaces"].append({"name": "MyName", "description": "This is a valid namespace, and should be the only one returned."})
+        
+        self.assertDictEqual(expected_docstring_return, returned_dict)
+
 
     # ###############################################################
     # # Complex
