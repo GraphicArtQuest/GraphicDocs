@@ -113,7 +113,6 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return["throws"].append({"type": "YetAnotherError", "description": None})
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
-
     
     def test_only_throws_tag_type_missing_closing_brackets(self):
         """Should raise an exception because the bracket was never closed"""
@@ -166,6 +165,19 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return["throws"].append({"type": "AnotherErrorType", "description": "This is a third error with only one line."})
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
+
+    def test_only_throws_empty_arguments_not_parsed(self):
+        """If the throws tag doesn't have a type or description specified, it is a worthless tag. Ignore it."""
+        description_entry = """
+            @throws
+            """
+
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+
+        returned_dict = parse_docstring(description_entry)
+        
+        self.assertDictEqual(expected_docstring_return, returned_dict)
+
 
     ###############################################################
     # Complex
