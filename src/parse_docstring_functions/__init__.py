@@ -14,6 +14,6 @@ from src.parse_docstring_functions.get_namespaces import get_namespaces
 from src.parse_docstring_functions.get_private import get_private
 from src.parse_docstring_functions.get_returns import get_returns
 from src.parse_docstring_functions.get_since import get_since
-#get_throws
+from src.parse_docstring_functions.get_throws import get_throws
 from src.parse_docstring_functions.get_todo import get_todo
 from src.parse_docstring_functions.get_version import get_version

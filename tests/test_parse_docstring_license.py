@@ -194,6 +194,7 @@ class TestParseDocstring_License(unittest.TestCase):
         expected_docstring_return["description"] = "This one also has a description in it."
         expected_docstring_return["examples"] = []
         expected_docstring_return["examples"].append({"caption": "Some caption text", "code": "# This is a comment within the example\nmyvar = 2\nif myvar == 2:\n    print(myvar)"})
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": None, "description": "An error with no type 1"})
         expected_docstring_return["parameters"].append({"MyParam": "This is a param description"})
         expected_docstring_return["parameters"].append({"SecondParamName": "This is another param description"})

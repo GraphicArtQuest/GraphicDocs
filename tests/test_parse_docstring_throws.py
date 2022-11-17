@@ -16,6 +16,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": "CustomErrorType", "description": "This is a description of a thrown error with a specified error type"})
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -26,6 +27,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": None, "description": "This is a description of a thrown error with no specified error type"})
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -36,6 +38,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": "CustomErrorType", "description": None})
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -47,6 +50,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": "CustomErrorType", "description": "This is a description of a thrown error with a specified error type that spreads onto a second line."})
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -58,6 +62,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": None, "description": "This is a description of a thrown error with a specified error type that spreads onto a second line."})
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -71,6 +76,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": "CustomErrorType", "description": "This is a description of a thrown error with a specified error type"})
         expected_docstring_return["throws"].append({"type": "AnotherErrorType", "description": "This is a second error"})
         
@@ -85,6 +91,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": None, "description": "This is a description of a thrown error with a specified error type"})
         expected_docstring_return["throws"].append({"type": None, "description": "This is a second error"})
         
@@ -100,6 +107,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": "CustomErrorType", "description": None})
         expected_docstring_return["throws"].append({"type": "AnotherErrorType", "description": None})
         expected_docstring_return["throws"].append({"type": "YetAnotherError", "description": None})
@@ -121,6 +129,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": None, "description": "CustomErrorType] This is a description of a thrown error with a specified error type"})
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -132,6 +141,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": None, "description": "[CustomErrorType] This is a description of a thrown error with a specified error type"})
         
         self.assertDictEqual(expected_docstring_return, returned_dict)
@@ -150,6 +160,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         expected_docstring_return = deepcopy(blank_parse_docstring_return)
 
         returned_dict = parse_docstring(description_entry)
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": "CustomErrorType", "description": "This is a description of a thrown error with a specified error type.\nThe description has two paragraphs."})
         expected_docstring_return["throws"].append({"type": None, "description": "This is an error description that has no type.\nIt also has two paragraphs."})
         expected_docstring_return["throws"].append({"type": "AnotherErrorType", "description": "This is a third error with only one line."})
@@ -183,6 +194,7 @@ class TestParseDocstring_Throws(unittest.TestCase):
         returned_dict = parse_docstring(description_entry)
         expected_docstring_return["description"] = "This one also has a description in it."
 
+        expected_docstring_return["throws"] = []
         expected_docstring_return["throws"].append({"type": None, "description": "An error with no type 1"})
         expected_docstring_return["throws"].append({"type": "CustomErrorType", "description": None})
         expected_docstring_return["throws"].append({"type": "AnotherErrorType", "description": None})
