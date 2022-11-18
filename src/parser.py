@@ -1,5 +1,4 @@
 import inspect
-import pprint
 
 import src.parse_docstring_functions as parse_docstring_functions
 
@@ -130,4 +129,131 @@ def parse_function(function_ref: object) -> dict:
         "docstring": parsed_docstring,
         "arguments": func_args, # In order in which they appear in the function
         "returns": func_returns
+    }
+
+def parse_class(class_ref) -> dict:
+    """
+        Inspect a class and return a dictionary of documentation values.
+
+        @returns a dictionary of documentation values:
+        {
+            annotations: List of tuples as (name: `str`, type: `object`) (or `None`),
+            arguments: Excluding `self`, list of dictionaries as [default: `any`, name: `str`, required: bool, type: any] (or `None`),
+            docstring: Parsed docstring object (or `None`)
+            methods: List of parsed functions (or `None`)
+            name: String of the function name
+            parent: Name of the parent class this class inherited from (or `None`)
+            properties: List of dictionaries for all class properties as [docstring: `dict`, name: `str`, readable: `bool`, writeable: `bool`]
+        }
+    """
+    if not inspect.isclass(class_ref):
+        return
+
+    # DOCSTRING
+    class_docstring = parse_docstring(class_ref.__doc__)
+    if class_ref.__name__[0] == "_":
+        # Starting the class name with an underscore indicates it is private.
+        if class_docstring is not None:
+            class_docstring["private"] = True
+        else:
+            # If there was no docstring provided, we need to make our own docstring
+            class_docstring = parse_docstring("@private")
+
+    # CLASS ARGUMENTS
+    class_arguments = inspect.getfullargspec(class_ref).args # This will always return an array from args in __init__
+    args_list = []  # A working list to hold the formatted dictionary objects from each argument
+    
+    if len(class_arguments) > 0:
+        for i in range(1, len(class_arguments)):
+            # Start at 1 instead of 0. First argument is ALWAYS a reference to "self", even if named something else.
+            #   As far as generated documentation purposes go, this has little value to the end user. Discard it.
+            arg_name = class_arguments[i]
+            class_parameters = inspect.signature(class_ref.__init__).parameters[arg_name]
+
+            arg_type = class_parameters.annotation
+            if arg_type == inspect._empty:
+                arg_type = any
+
+            arg_required = False
+            arg_default = class_parameters.default
+            if arg_default == inspect._empty:   # If no default was found, then this is one of the required params
+                arg_required = True
+                arg_default = None
+
+            args_list.append({"name": arg_name, "type": arg_type, "required": arg_required, "default": arg_default})
+    if len(args_list) == 0:
+        args_list = None
+
+    # CLASS PROPERTIES AND METHODS
+    class_properties = []
+    class_methods = []
+    class_subclasses = []
+
+    for item in class_ref.__dict__.keys():
+
+        if item[0:2] == "__":
+            # Eliminate built in Python properties and functions (double __) and go on to the next one
+            continue
+
+        attribute = getattr(class_ref, item)
+
+        if inspect.isdatadescriptor(attribute): # i.e. Properties
+            class_properties.append({
+                "name": item, 
+                "docstring": parse_docstring(attribute.__doc__), 
+                "readable": inspect.isfunction(attribute.fget), 
+                "writable": inspect.isfunction(attribute.fset)})
+
+        if inspect.isfunction(attribute):
+            parsed_function = parse_function(attribute)
+            # if parsed_function["arguments"] is not None:
+            if parsed_function["arguments"] == None:
+                # There was no self argument provided. This is likely a static method.
+                class_methods.append(parsed_function)
+                continue
+
+            # Remove the existing first argument, which is always a reference to self in class functions
+            del parsed_function["arguments"][0]    
+
+            if len(parsed_function["arguments"]) == 0:
+                parsed_function["arguments"] = None
+
+            class_methods.append(parsed_function)
+        
+        if inspect.isclass(attribute):
+            class_subclasses.append(parse_class(attribute)) # Recursively parse this subclass using this parsing func
+
+    if len(class_properties) == 0:
+        class_properties = None
+    if len(class_methods) == 0:
+        class_methods = None
+    if len(class_subclasses) == 0:
+        class_subclasses = None
+
+    # CLASS ANNOTATIONS
+    class_annotations = []
+    for key in class_ref.__annotations__.keys():
+        class_annotations.append((key, class_ref.__annotations__[key]))
+
+    if len(class_annotations) == 0:
+        class_annotations = None
+
+    # PARENT CLASS
+    parent_tuple = inspect.getmro(class_ref)
+    if len(parent_tuple) == 2:
+        # If there was no inherited class, this tuple only has two values.
+        parent_class = None
+    else:
+        # If there IS an inherited class, the tuple has three values, the second index of which is the parent
+        parent_class = inspect.getmro(class_ref)[1].__name__
+
+    return {
+        "name": class_ref.__name__,
+        "docstring": class_docstring,
+        "arguments": args_list,
+        "properties": class_properties,
+        "methods": class_methods,
+        "annotations": class_annotations,
+        "subclasses": class_subclasses,
+        "parent": parent_class
     }

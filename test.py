@@ -28,5 +28,7 @@ from tests.test_parse_docstring import TestParseDocstring
 
 from tests.test_parse_function import TestParseFunction
 
+from tests.test_parse_class import TestParseClass
+
 if __name__ == '__main__':
     unittest.main()
