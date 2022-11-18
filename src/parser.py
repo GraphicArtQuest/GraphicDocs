@@ -93,22 +93,20 @@ def parse_function(function_ref: object) -> dict:
 
     # ARGUMENTS
     for arg in inspect.signature(function_ref).parameters:
-        
+
         try:
             # If the argument type is specified, it will be found here
-            arg_type = inspect.signature(function_ref).parameters[arg].annotation
+            class_arguments = inspect.signature(function_ref).parameters[arg]
+            arg_type = class_arguments.annotation
             if arg_type == inspect._empty:
                 arg_type = None
 
-            arg_default = inspect.signature(function_ref).parameters[arg].default
+            arg_required = False
+            arg_default = class_arguments.default
             if arg_default == inspect._empty:
-                arg_default = None
-            
-            arg_required = inspect.signature(function_ref).parameters[arg].default
-            if arg_required == inspect._empty:
                 arg_required = True
-            else:
-                arg_required = False
+                arg_default = None
+
         except:
             arg_type = None
             arg_default = None
