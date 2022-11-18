@@ -1,4 +1,5 @@
 import inspect
+import pprint
 
 import src.parse_docstring_functions as parse_docstring_functions
 
@@ -81,8 +82,13 @@ def parse_function(function_ref: object) -> dict:
         return
     
     parsed_docstring = parse_docstring(function_ref.__doc__)
-    if function_ref.__name__[0] == "_": # Beginning a function name with an underscore indicates it should be private
-        parsed_docstring["private"] = True
+    if function_ref.__name__[0] == "_":
+        # Starting the function name with an underscore indicates it is private.
+        if parsed_docstring is not None:
+            parsed_docstring["private"] = True
+        else:
+            # If there was no docstring provided, we need to make our own docstring
+            parsed_docstring = parse_docstring("@private")
 
     func_args = []
 

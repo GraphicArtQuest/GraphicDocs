@@ -194,3 +194,26 @@ class TestParseFunction(unittest.TestCase):
         parsed_return_dict = parse_function(_test_func)
 
         self.assertDictEqual(expected_parsed_function_return, parsed_return_dict)
+
+    def test_function_beginning_with_underscore_flags_as_private_even_without_docstring(self):
+        """Functions names that start with an underscore should flag as private regardless of whether the docstring
+        `@private` tag. This is also true if there is no docstring at all."""
+        self.maxDiff = None
+        
+        def _test_func():
+            pass
+
+        expected_docstring_return = deepcopy(blank_parse_docstring_return)
+        expected_docstring_return["private"] = True
+
+        expected_parsed_function_return = {
+            "name": "_test_func",
+            "docstring": None,
+            "arguments": None,
+            "returns": None
+        }
+        expected_parsed_function_return["docstring"] = expected_docstring_return
+
+        parsed_return_dict = parse_function(_test_func)
+
+        self.assertDictEqual(expected_parsed_function_return, parsed_return_dict)
