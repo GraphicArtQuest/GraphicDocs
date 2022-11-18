@@ -26,5 +26,7 @@ from tests.test_parse_docstring_todo import TestParseDocstring_Todo
 from tests.test_parse_docstring_version import TestParseDocstring_Version
 from tests.test_parse_docstring import TestParseDocstring
 
+from tests.test_parse_function import TestParseFunction
+
 if __name__ == '__main__':
     unittest.main()

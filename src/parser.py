@@ -1,3 +1,5 @@
+import inspect
+
 import src.parse_docstring_functions as parse_docstring_functions
 
 def parse_docstring(docstring: str) -> dict:
@@ -59,4 +61,67 @@ def parse_docstring(docstring: str) -> dict:
         "throws": parse_docstring_functions.get_throws(docstring),
         "todo": parse_docstring_functions.get_todo(docstring),
         "version": parse_docstring_functions.get_version(docstring)
+    }
+
+def parse_function(function_ref: object) -> dict:
+    """
+        Inpsect a function and return a dictionary of documentation values.
+
+        @returns If not passed a function, returns `None`. Otherwise, it returns a dictionary of documentation values
+            for that function:
+            
+            `{
+                "name",
+                "docstring",
+                "arguments",
+                "returns"
+            }`
+    """
+    if not inspect.isfunction(function_ref):
+        return
+    
+    parsed_docstring = parse_docstring(function_ref.__doc__)
+    if function_ref.__name__[0] == "_": # Beginning a function name with an underscore indicates it should be private
+        parsed_docstring["private"] = True
+
+    func_args = []
+
+    # ARGUMENTS
+    for arg in inspect.signature(function_ref).parameters:
+        
+        try:
+            # If the argument type is specified, it will be found here
+            arg_type = inspect.signature(function_ref).parameters[arg].annotation
+            if arg_type == inspect._empty:
+                arg_type = None
+
+            arg_default = inspect.signature(function_ref).parameters[arg].default
+            if arg_default == inspect._empty:
+                arg_default = None
+            
+            arg_required = inspect.signature(function_ref).parameters[arg].default
+            if arg_required == inspect._empty:
+                arg_required = True
+            else:
+                arg_required = False
+        except:
+            arg_type = None
+            arg_default = None
+
+        func_args.append({"name": arg, "type": arg_type, "required": arg_required, "default": arg_default})
+    if len(func_args) == 0:
+        func_args = None
+
+    # RETURNS
+    try:
+        # If no return value explicitly defined, trying to access this way will throw an error
+        func_returns = function_ref.__annotations__['return']
+    except:
+        func_returns = None
+
+    return {
+        "name": function_ref.__name__,
+        "docstring": parsed_docstring,
+        "arguments": func_args, # In order in which they appear in the function
+        "returns": func_returns
     }
