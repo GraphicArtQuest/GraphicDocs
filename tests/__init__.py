@@ -18,3 +18,33 @@ blank_parse_docstring_return = {    # A blank template
     "todo": None,
     "version": None
 }
+
+blank_parsed_function_return = {
+    "arguments": None,
+    "docstring": None,
+    "name": "",
+    "returns": None
+}
+
+blank_parse_class_return = {
+    "name": "",
+    "docstring": None,
+    "annotations": None,
+    "arguments": None,
+    "methods": None,
+    "properties": None,
+    "parent": None,
+    "subclasses": None
+}
+
+blank_parse_module_return = {
+    "classes": None,
+    "functions": None,
+    "imported": {
+        "classes": None,
+        "functions": None,
+        "modules": None
+    },
+    "name": "",
+    "sourcefile": ""
+}

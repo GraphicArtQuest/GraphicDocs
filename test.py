@@ -30,5 +30,7 @@ from tests.test_parse_function import TestParseFunction
 
 from tests.test_parse_class import TestParseClass
 
+from tests.test_parse_module import TestParseModule
+
 if __name__ == '__main__':
     unittest.main()

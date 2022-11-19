@@ -128,26 +128,26 @@ class TestParseClass(unittest.TestCase):
             "docstring": None,
             "annotations": None,
             "arguments": None,
-            "methods": [
-                {
+            "methods": {
+                "my_function": {
                     "arguments": None,
                     "docstring": None,
                     "name": "my_function",
                     "returns": None
                 },
-                {
+                "my_function2": {
                     "arguments": None,
                     "docstring": None,
                     "name": "my_function2",
                     "returns": int
                 },
-                {
+                "my_function3": {
                     "arguments": [{"name": "myvar", "type": str, "required": True, "default": None}],
                     "docstring": None,
                     "name": "my_function3",
                     "returns": int
                 }
-            ],
+            },
             "properties": None,
             "parent": None,
             "subclasses": None
@@ -221,29 +221,30 @@ class TestParseClass(unittest.TestCase):
             "docstring": None,
             "annotations": None,
             "arguments": None,
-            "methods": [
-                {
+            "methods": {
+                "_get_myprop": {
                     "arguments": None,
                     "docstring": expected_gettersetter_docstring_return,
                     "name": "_get_myprop",
                     "returns": None
-                },{
+                },
+                "_set_myprop": {
                     "arguments": [{"name": "arg1", "type": int, "required": True, "default": None}],
                     "docstring": expected_gettersetter_docstring_return,
                     "name": "_set_myprop",
                     "returns": None
                 }
-            ],
-            "properties": [
-                {"name": "MyProp8", "docstring": expected_prop8_docstring_return, "readable": True, "writable": False},
-                {"name": "MyProp2", "docstring": None, "readable": True, "writable": True},
-                {"name": "MyProp1", "docstring": None, "readable": True, "writable": True},
-                {"name": "MyProp3", "docstring": None, "readable": True, "writable": False},
-                {"name": "MyProp4", "docstring": None, "readable": True, "writable": False},
-                {"name": "MyProp5", "docstring": None, "readable": False, "writable": True},
-                {"name": "MyProp6", "docstring": None, "readable": False, "writable": False},
-                {"name": "MyProp7", "docstring": expected_prop7_docstring_return, "readable": True, "writable": False}
-            ],
+            },
+            "properties": {
+                "MyProp8": {"docstring": expected_prop8_docstring_return, "readable": True, "writable": False},
+                "MyProp2": {"docstring": None, "readable": True, "writable": True},
+                "MyProp1": {"docstring": None, "readable": True, "writable": True},
+                "MyProp3": {"docstring": None, "readable": True, "writable": False},
+                "MyProp4": {"docstring": None, "readable": True, "writable": False},
+                "MyProp5": {"docstring": None, "readable": False, "writable": True},
+                "MyProp6": {"docstring": None, "readable": False, "writable": False},
+                "MyProp7": {"docstring": expected_prop7_docstring_return, "readable": True, "writable": False}
+            },
             "parent": None,
             "subclasses": None
         }
@@ -263,7 +264,7 @@ class TestParseClass(unittest.TestCase):
         expected_parsed_function_return = {
             "name": "TestClass",
             "docstring": None,
-            "annotations": [("myvar1", int), ("myvar2", any)],
+            "annotations": {"myvar1": int, "myvar2": any},
             "arguments": None,
             "methods": None,
             "properties": None,
@@ -297,8 +298,8 @@ class TestParseClass(unittest.TestCase):
             "methods": None,
             "properties": None,
             "parent": "SubClass1",
-            "subclasses": [
-                {
+            "subclasses": {
+                "SubClass3": {
                     "name": "SubClass3",
                     "docstring": None,
                     "annotations": None,
@@ -308,7 +309,7 @@ class TestParseClass(unittest.TestCase):
                     "parent": None,
                     "subclasses": None
                 },
-                {
+                "SubClass4": {
                     "name": "SubClass4",
                     "docstring": None,
                     "annotations": None,
@@ -316,18 +317,20 @@ class TestParseClass(unittest.TestCase):
                     "methods": None,
                     "properties": None,
                     "parent": "SubClass3",
-                    "subclasses": [{
-                                    "name": "SubClass5",
-                                    "docstring": None,
-                                    "annotations": None,
-                                    "arguments": None,
-                                    "methods": None,
-                                    "properties": None,
-                                    "parent": None,
-                                    "subclasses": None
-                                }]
+                    "subclasses": {
+                        "SubClass5": {
+                            "name": "SubClass5",
+                            "docstring": None,
+                            "annotations": None,
+                            "arguments": None,
+                            "methods": None,
+                            "properties": None,
+                            "parent": None,
+                            "subclasses": None
+                        }
+                    }
                 },
-            ]
+            }
         }
         parsed_return_dict = parse_class(TestClass2)
 

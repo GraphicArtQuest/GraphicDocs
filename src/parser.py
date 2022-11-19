@@ -1,4 +1,5 @@
 import inspect
+import os
 
 import src.parse_docstring_functions as parse_docstring_functions
 
@@ -126,7 +127,9 @@ def parse_function(function_ref: object) -> dict:
         "name": function_ref.__name__,
         "docstring": parsed_docstring,
         "arguments": func_args, # In order in which they appear in the function
-        "returns": func_returns
+        "returns": func_returns,
+        # "lineno": function_ref.__code__.co_firstlineno,
+        # "sourcefile": inspect.getsourcefile(function_ref),
     }
 
 def parse_class(class_ref) -> dict:
@@ -183,9 +186,9 @@ def parse_class(class_ref) -> dict:
         args_list = None
 
     # CLASS PROPERTIES AND METHODS
-    class_properties = []
-    class_methods = []
-    class_subclasses = []
+    class_properties = {}
+    class_methods = {}
+    class_subclasses = {}
 
     for item in class_ref.__dict__.keys():
 
@@ -196,18 +199,18 @@ def parse_class(class_ref) -> dict:
         attribute = getattr(class_ref, item)
 
         if inspect.isdatadescriptor(attribute): # i.e. Properties
-            class_properties.append({
-                "name": item, 
+            class_properties[item] = {
                 "docstring": parse_docstring(attribute.__doc__), 
                 "readable": inspect.isfunction(attribute.fget), 
-                "writable": inspect.isfunction(attribute.fset)})
+                "writable": inspect.isfunction(attribute.fset)
+            }
 
         if inspect.isfunction(attribute):
             parsed_function = parse_function(attribute)
             # if parsed_function["arguments"] is not None:
             if parsed_function["arguments"] == None:
                 # There was no self argument provided. This is likely a static method.
-                class_methods.append(parsed_function)
+                class_methods[parsed_function["name"]] = parsed_function
                 continue
 
             # Remove the existing first argument, which is always a reference to self in class functions
@@ -216,10 +219,11 @@ def parse_class(class_ref) -> dict:
             if len(parsed_function["arguments"]) == 0:
                 parsed_function["arguments"] = None
 
-            class_methods.append(parsed_function)
+            class_methods[parsed_function["name"]] = parsed_function
         
         if inspect.isclass(attribute):
-            class_subclasses.append(parse_class(attribute)) # Recursively parse this subclass using this parsing func
+            parsed_subclass = parse_class(attribute)
+            class_subclasses[parsed_subclass["name"]] = parsed_subclass # Recursively parse this subclass using this parsing func
 
     if len(class_properties) == 0:
         class_properties = None
@@ -229,9 +233,9 @@ def parse_class(class_ref) -> dict:
         class_subclasses = None
 
     # CLASS ANNOTATIONS
-    class_annotations = []
+    class_annotations = {}
     for key in class_ref.__annotations__.keys():
-        class_annotations.append((key, class_ref.__annotations__[key]))
+        class_annotations[key] = class_ref.__annotations__[key]
 
     if len(class_annotations) == 0:
         class_annotations = None
@@ -253,5 +257,71 @@ def parse_class(class_ref) -> dict:
         "methods": class_methods,
         "annotations": class_annotations,
         "subclasses": class_subclasses,
-        "parent": parent_class
+        "parent": parent_class,
+        # "sourcefile": inspect.getsourcefile(class_ref),
+        # "lineno": inspect.findsource(class_ref)[1] + 1 # This is zero indexed, but we read line numbers starting at 1
+    }
+
+def parse_module(module_ref) -> dict:
+    """
+        This function parses Python module files (i.e. `*.py`).
+
+        Functions and classes will always show up in alphabetical order, NOT the order they appear in the file.
+    """
+
+    if not inspect.ismodule(module_ref):
+        return
+    
+    # CLASSES
+    class_list = {}
+    imported_classes = []
+    for class_ref in inspect.getmembers(module_ref, inspect.isclass):
+        # Check if the class module is the same as the module name we're parsing. Without this check, the parser would
+        #   get all of the imported functions as well, which is unexpected behavior.
+        if class_ref[1].__module__ == module_ref.__name__:
+            class_list[class_ref[1].__name__] = (parse_class(class_ref[1]))
+        else:
+            imported_classes.append((class_ref[1].__module__, class_ref[1].__name__))
+    if len(class_list) == 0:
+        class_list = None
+    if len(imported_classes) == 0:
+        imported_classes = None
+
+    # FUNCTIONS
+    functions_list = {}
+    imported_functions = []
+    for function_name in inspect.getmembers(module_ref, inspect.isfunction):
+        if function_name[1].__module__ == module_ref.__name__:
+            # Check if the function module (from the second index of the tuple returned by inspect.getmembers) is the
+            #   same as the module name we're parsing. Without this check, the parser would get all of the imported
+            #   functions as well, which is unexpected behavior.
+            functions_list[function_name[1].__name__] = parse_function(function_name[1])
+        else:
+            # Return a tuple of the function's module and the function's name
+            imported_functions.append((function_name[1].__module__, function_name[1].__name__))
+    if len(functions_list) == 0:
+        functions_list = None
+    if len(imported_functions) == 0:
+        imported_functions = None
+    
+    # MODULES
+    imported_modules = []
+
+    for module in inspect.getmembers(module_ref, inspect.ismodule):
+        imported_modules.append(module[0])
+            # NOTE: Only does the highest level. For example, if imported "tests.input_files.testmodule_only_docstring",
+            #   then it will return "tests".
+    if len(imported_modules) == 0:
+        imported_modules = None
+
+    return {
+        "name": module_ref.__name__,
+        "classes": class_list,
+        "imported": {
+            "classes": imported_classes,
+            "functions": imported_functions,
+            "modules": imported_modules
+        },
+        "functions": functions_list,
+        "sourcefile": os.path.abspath(module_ref.__file__)
     }
