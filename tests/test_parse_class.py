@@ -400,16 +400,6 @@ class TestParseClass(unittest.TestCase):
         expected_parsed_class_return["lineno"] = (14,17)
         expected_parsed_class_return["sourcefile"] = os.path.join(os.path.dirname(__file__), "input_files", "testmodule.py")
 
-        # expected_parsed_class_return = {
-        #     "name": "test_func1",
-        #     "docstring": None,
-        #     "arguments": None,
-        #     "returns": None,
-        #     "lineno": (22, 23),
-        #     "sourcefile": os.path.join(os.path.dirname(__file__), "input_files", "testmodule.py")
-        # }
-
         parsed_return_dict = parse_class(TestClass1)
-
 
         self.assertDictEqual(expected_parsed_class_return, parsed_return_dict)
