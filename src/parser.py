@@ -249,6 +249,10 @@ def parse_class(class_ref) -> dict:
         # If there IS an inherited class, the tuple has three values, the second index of which is the parent
         parent_class = inspect.getmro(class_ref)[1].__name__
 
+    # LINE NUMBERS
+    linestart = inspect.findsource(class_ref)[1] + 1, # This is zero indexed, but we read line numbers starting at 1
+    num_code_lines = inspect.getsource(class_ref).count("\n")  # total number of code as separated by a new line
+
     return {
         "name": class_ref.__name__,
         "docstring": class_docstring,
@@ -258,8 +262,8 @@ def parse_class(class_ref) -> dict:
         "annotations": class_annotations,
         "subclasses": class_subclasses,
         "parent": parent_class,
-        # "sourcefile": inspect.getsourcefile(class_ref),
-        # "lineno": inspect.findsource(class_ref)[1] + 1 # This is zero indexed, but we read line numbers starting at 1
+        "sourcefile": inspect.getsourcefile(class_ref),
+        "lineno": (linestart[0], linestart[0] + num_code_lines - 1) # Tuple of (linestart: int, lineend: int)
     }
 
 def parse_module(module_ref) -> dict:

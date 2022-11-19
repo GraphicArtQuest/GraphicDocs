@@ -71,6 +71,12 @@ class TestParseModule(unittest.TestCase):
         expected_parsed_module_return["sourcefile"] = os.path.abspath(testmodule.__file__)
 
         parsed_return_dict = parse_module(testmodule)
+        
+        # Line numbers and sources are verified elsewhere. Mocking them as correct prevents more brittle tests. 
+        expected_parsed_module_return["classes"]["TestClass1"]["lineno"] = parsed_return_dict["classes"]["TestClass1"]["lineno"]
+        expected_parsed_module_return["classes"]["TestClass1"]["sourcefile"] = parsed_return_dict["classes"]["TestClass1"]["sourcefile"]
+        expected_parsed_module_return["classes"]["_TestClass2"]["lineno"] = parsed_return_dict["classes"]["_TestClass2"]["lineno"]
+        expected_parsed_module_return["classes"]["_TestClass2"]["sourcefile"] = parsed_return_dict["classes"]["_TestClass2"]["sourcefile"]
 
         self.assertDictEqual(expected_parsed_module_return, parsed_return_dict)
     

@@ -27,13 +27,15 @@ blank_parsed_function_return = {
 }
 
 blank_parse_class_return = {
-    "name": "",
-    "docstring": None,
     "annotations": None,
     "arguments": None,
+    "docstring": None,
+    "lineno": (1, 1),
     "methods": None,
-    "properties": None,
+    "name": "",
     "parent": None,
+    "properties": None,
+    "sourcefile": "",
     "subclasses": None
 }
 
