@@ -77,6 +77,13 @@ class TestParseModule(unittest.TestCase):
         expected_parsed_module_return["classes"]["TestClass1"]["sourcefile"] = parsed_return_dict["classes"]["TestClass1"]["sourcefile"]
         expected_parsed_module_return["classes"]["_TestClass2"]["lineno"] = parsed_return_dict["classes"]["_TestClass2"]["lineno"]
         expected_parsed_module_return["classes"]["_TestClass2"]["sourcefile"] = parsed_return_dict["classes"]["_TestClass2"]["sourcefile"]
+        
+        expected_parsed_module_return["functions"]["test_func1"]["lineno"] = parsed_return_dict["functions"]["test_func1"]["lineno"]
+        expected_parsed_module_return["functions"]["test_func1"]["sourcefile"] = parsed_return_dict["functions"]["test_func1"]["sourcefile"]
+        expected_parsed_module_return["functions"]["test_func2"]["lineno"] = parsed_return_dict["functions"]["test_func2"]["lineno"]
+        expected_parsed_module_return["functions"]["test_func2"]["sourcefile"] = parsed_return_dict["functions"]["test_func2"]["sourcefile"]
+        expected_parsed_module_return["functions"]["test_func3"]["lineno"] = parsed_return_dict["functions"]["test_func3"]["lineno"]
+        expected_parsed_module_return["functions"]["test_func3"]["sourcefile"] = parsed_return_dict["functions"]["test_func3"]["sourcefile"]
 
         self.assertDictEqual(expected_parsed_module_return, parsed_return_dict)
     

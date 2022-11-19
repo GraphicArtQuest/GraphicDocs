@@ -70,13 +70,15 @@ def parse_function(function_ref: object) -> dict:
 
         @returns If not passed a function, returns `None`. Otherwise, it returns a dictionary of documentation values
             for that function:
-            
-            `{
-                "name",
-                "docstring",
-                "arguments",
-                "returns"
-            }`
+                
+        {
+            arguments: List of dictionaries as [default: `any`, name: `str`, required: bool, type: any] (or `None`),
+            docstring: Parsed docstring object (or `None`)
+            lineno: Lines in the source code where this occers: tuple(startingline: int, endingline: int)
+            name: String of the function name
+            returns: Whatever the return value type is
+            sourcefile: A string filepath for where this sourcefile is located
+        }
     """
     if not inspect.isfunction(function_ref):
         return
@@ -123,13 +125,17 @@ def parse_function(function_ref: object) -> dict:
     except:
         func_returns = None
 
+    # LINE NUMBERS
+    linestart = inspect.findsource(function_ref)[1] + 1, # This is zero indexed, but we read line numbers starting at 1
+    num_code_lines = inspect.getsource(function_ref).count("\n")  # total number of code as separated by a new line
+
     return {
-        "name": function_ref.__name__,
-        "docstring": parsed_docstring,
         "arguments": func_args, # In order in which they appear in the function
+        "docstring": parsed_docstring,
+        "lineno": (linestart[0], linestart[0] + num_code_lines - 1), # Tuple of (linestart: int, lineend: int)
+        "name": function_ref.__name__,
         "returns": func_returns,
-        # "lineno": function_ref.__code__.co_firstlineno,
-        # "sourcefile": inspect.getsourcefile(function_ref),
+        "sourcefile": inspect.getsourcefile(function_ref),
     }
 
 def parse_class(class_ref) -> dict:
@@ -254,17 +260,17 @@ def parse_class(class_ref) -> dict:
     num_code_lines = inspect.getsource(class_ref).count("\n")  # total number of code as separated by a new line
 
     return {
-        "name": class_ref.__name__,
-        "docstring": class_docstring,
-        "arguments": args_list,
-        "properties": class_properties,
-        "methods": class_methods,
         "annotations": class_annotations,
-        "subclasses": class_subclasses,
+        "arguments": args_list,
+        "docstring": class_docstring,
+        "lineno": (linestart[0], linestart[0] + num_code_lines - 1), # Tuple of (linestart: int, lineend: int)
+        "methods": class_methods,
+        "name": class_ref.__name__,
         "parent": parent_class,
+        "properties": class_properties,
         "sourcefile": inspect.getsourcefile(class_ref),
-        "lineno": (linestart[0], linestart[0] + num_code_lines - 1) # Tuple of (linestart: int, lineend: int)
-    }
+        "subclasses": class_subclasses
+        }
 
 def parse_module(module_ref) -> dict:
     """
@@ -319,13 +325,13 @@ def parse_module(module_ref) -> dict:
         imported_modules = None
 
     return {
-        "name": module_ref.__name__,
         "classes": class_list,
+        "functions": functions_list,
         "imported": {
             "classes": imported_classes,
             "functions": imported_functions,
             "modules": imported_modules
         },
-        "functions": functions_list,
+        "name": module_ref.__name__,
         "sourcefile": os.path.abspath(module_ref.__file__)
     }

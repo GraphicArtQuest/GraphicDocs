@@ -1,10 +1,9 @@
 from copy import deepcopy
-import json
+import os
 import unittest
 
-import pprint
-
 from tests.__init__ import blank_parse_docstring_return
+from tests.input_files.testmodule import test_func1
 from src.parser import parse_function
 
 class TestParseFunction(unittest.TestCase):
@@ -46,6 +45,10 @@ class TestParseFunction(unittest.TestCase):
 
         parsed_return_dict = parse_function(test_func)
 
+        # Line numbers and sources are verified elsewhere. Mocking them as correct prevents more brittle tests. 
+        expected_parsed_function_return["lineno"] = parsed_return_dict["lineno"]
+        expected_parsed_function_return["sourcefile"] = parsed_return_dict["sourcefile"]
+
         self.assertDictEqual(expected_parsed_function_return, parsed_return_dict)
 
     def test_simple_function_parse_arguments_basics(self):
@@ -73,6 +76,10 @@ class TestParseFunction(unittest.TestCase):
         }
 
         parsed_return_dict = parse_function(test_func)
+
+        # Line numbers and sources are verified elsewhere. Mocking them as correct prevents more brittle tests. 
+        expected_parsed_function_return["lineno"] = parsed_return_dict["lineno"]
+        expected_parsed_function_return["sourcefile"] = parsed_return_dict["sourcefile"]
 
         self.assertDictEqual(expected_parsed_function_return, parsed_return_dict)
 
@@ -106,6 +113,10 @@ class TestParseFunction(unittest.TestCase):
         expected_parsed_function_return["docstring"] = expected_docstring_return
 
         parsed_return_dict = parse_function(test_func)
+
+        # Line numbers and sources are verified elsewhere. Mocking them as correct prevents more brittle tests. 
+        expected_parsed_function_return["lineno"] = parsed_return_dict["lineno"]
+        expected_parsed_function_return["sourcefile"] = parsed_return_dict["sourcefile"]
 
         self.assertDictEqual(expected_parsed_function_return, parsed_return_dict)
 
@@ -141,6 +152,10 @@ class TestParseFunction(unittest.TestCase):
 
         parsed_return_dict = parse_function(test_func)
 
+        # Line numbers and sources are verified elsewhere. Mocking them as correct prevents more brittle tests. 
+        expected_parsed_function_return["lineno"] = parsed_return_dict["lineno"]
+        expected_parsed_function_return["sourcefile"] = parsed_return_dict["sourcefile"]
+
         self.assertDictEqual(expected_parsed_function_return, parsed_return_dict)
 
     def test_simple_function_with_returns_annotation_no_returns_tag(self):
@@ -165,6 +180,10 @@ class TestParseFunction(unittest.TestCase):
         expected_parsed_function_return["docstring"] = expected_docstring_return
 
         parsed_return_dict = parse_function(test_func)
+
+        # Line numbers and sources are verified elsewhere. Mocking them as correct prevents more brittle tests. 
+        expected_parsed_function_return["lineno"] = parsed_return_dict["lineno"]
+        expected_parsed_function_return["sourcefile"] = parsed_return_dict["sourcefile"]
 
         self.assertDictEqual(expected_parsed_function_return, parsed_return_dict)
 
@@ -193,6 +212,10 @@ class TestParseFunction(unittest.TestCase):
 
         parsed_return_dict = parse_function(_test_func)
 
+        # Line numbers and sources are verified elsewhere. Mocking them as correct prevents more brittle tests. 
+        expected_parsed_function_return["lineno"] = parsed_return_dict["lineno"]
+        expected_parsed_function_return["sourcefile"] = parsed_return_dict["sourcefile"]
+
         self.assertDictEqual(expected_parsed_function_return, parsed_return_dict)
 
     def test_function_beginning_with_underscore_flags_as_private_even_without_docstring(self):
@@ -215,5 +238,27 @@ class TestParseFunction(unittest.TestCase):
         expected_parsed_function_return["docstring"] = expected_docstring_return
 
         parsed_return_dict = parse_function(_test_func)
+
+        # Line numbers and sources are verified elsewhere. Mocking them as correct prevents more brittle tests. 
+        expected_parsed_function_return["lineno"] = parsed_return_dict["lineno"]
+        expected_parsed_function_return["sourcefile"] = parsed_return_dict["sourcefile"]
+
+        self.assertDictEqual(expected_parsed_function_return, parsed_return_dict)
+
+    def test_function_lineno_and_source(self):
+        """The lineno and sourcefile attributes have been mocked until now to prevent brittleness in the other tests.
+        This test looks explicitly at the 'testmodule' (which should rarely change), to verify it works right."""
+        self.maxDiff = None
+
+        expected_parsed_function_return = {
+            "name": "test_func1",
+            "docstring": None,
+            "arguments": None,
+            "returns": None,
+            "lineno": (22, 23),
+            "sourcefile": os.path.join(os.path.dirname(__file__), "input_files", "testmodule.py")
+        }
+
+        parsed_return_dict = parse_function(test_func1)
 
         self.assertDictEqual(expected_parsed_function_return, parsed_return_dict)

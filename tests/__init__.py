@@ -22,8 +22,10 @@ blank_parse_docstring_return = {    # A blank template
 blank_parsed_function_return = {
     "arguments": None,
     "docstring": None,
+    "lineno": (1,1),
     "name": "",
-    "returns": None
+    "returns": None,
+    "sourcefile": ""
 }
 
 blank_parse_class_return = {
