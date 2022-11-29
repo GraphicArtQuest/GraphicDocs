@@ -48,14 +48,14 @@ graph TD
 
     subgraph config [ ]
         
-        lookforuserdefinedconfig{User Defined\n Config File?}
-        overwritedefaultconfig[Overwrite\n Default Config\n From File]
+        lookforuserdefinedconfig{User Defined Config File?}
+        overwritedefaultconfig[Overwrite Default Config From File]
         searchworkingdir[Search for Config File in Working Directory]
         usedefaultconfigsettings[Use Default Config Settings]
         readsetting[Read Next User Setting]
-        isvalidsetting{Valid\n Setting?}
+        isvalidsetting{Valid Setting?}
         addnewsetting[Add Setting]
-        moresettings{More\n Settings?}
+        moresettings{More Settings?}
         configloaded[/Return Valid Config Settings/]
         
         lookforuserdefinedconfig --> |not specified| searchworkingdir
@@ -76,7 +76,7 @@ graph TD
     subgraph plugins [ ]
         loadpluginlist[/Get Plugin List From Config/]
         read_next_plugin[/read_next_plugin/]:::filter
-        pluginabsolutepath{Absolute\n Path?}
+        pluginabsolutepath{Absolute Path?}
         all_plugins_loaded[all_plugins_loaded]:::action
         plugin_dirA[Search for Plugin in Working Directory]
         plugin_dirB[Search for Plugin in Config Directory]
@@ -84,9 +84,9 @@ graph TD
         plugin_path_before_loading[plugin_path_before_loading]:::filter
         load_plugin[load_plugin]:::action
         plugin_not_found[plugin_not_found]:::action
-        pluginloaded{Plugin\n Loaded?}
+        pluginloaded{Plugin Loaded?}
         error_loading_plugin[error_loading_plugin]:::action
-        moreplugins{More\n Plugins?}
+        moreplugins{More Plugins?}
 
         loadpluginlist --> |plugins requested in config|read_next_plugin
         loadpluginlist --> |no plugins listed|all_plugins_loaded
@@ -113,7 +113,7 @@ graph TD
     core_loaded --> get_template_path_from_config
     subgraph template [Load Template]
         get_template_path_from_config[/get_template_path_from_config/]:::filter
-        templateabsolutepath{Absolute\n Path?}
+        templateabsolutepath{Absolute Path?}
         template_path_before_loading[/template_path_before_loading/]:::filter
         load_template[load_template]:::action
         template_dirA[Search for Template in Working Directory]
@@ -156,7 +156,7 @@ graph TD
         attempt_parse_pyfunction:::action
         unable_to_parse:::action
         parsing_complete:::action
-        moreparsingtargets{More Parsing\n Targets?}
+        moreparsingtargets{More Parsing Targets?}
         final_parsed_object[/final_parsed_object/]:::filter
 
         after_parsing_result[/after_parsing_result/]:::filter
