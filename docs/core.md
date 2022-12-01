@@ -186,7 +186,7 @@ graph TD
 
     end
 
-    final_parsed_object --> INITIALIZED([INITIALIZED])
+    final_parsed_object --> core_initialized:::action --> INITIALIZED([INITIALIZED])
 ```
 
 ## Building Documentation
