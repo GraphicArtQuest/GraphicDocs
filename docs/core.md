@@ -37,34 +37,30 @@ This chart shows the core engine's logic process while generating documentation.
 
 
 ```mermaid
- %%{init: { 'theme':'dark', 'sequence': {'useMaxWidth':false} } }%%
+%%{init: { 'theme':'dark', 'sequence': {'useMaxWidth':false} } }%%
 graph TD
     classDef action fill:red,color:white;
     classDef filter fill:blue,color:white;
 
-    START([START]) --> registercorehooks[Register Core Hooks]
-    registercorehooks --> getdefaultstaticconfig[/Get Default Config Settings/]
-    getdefaultstaticconfig --> lookforuserdefinedconfig
+    INIT([INIT]) --> initializedefaultstaticconfig[Initialize Config Settings]
 
     subgraph config [ ]
-        
+        initializedefaultstaticconfig --> lookforuserdefinedconfig
         lookforuserdefinedconfig{User Defined Config File?}
-        overwritedefaultconfig[Overwrite Default Config From File]
+        overwritedefaultconfig[Overwrite From File]
         searchworkingdir[Search for Config File in Working Directory]
         usedefaultconfigsettings[Use Default Config Settings]
         readsetting[Read Next User Setting]
-        isvalidsetting{Valid Setting?}
         addnewsetting[Add Setting]
         moresettings{More Settings?}
-        configloaded[/Return Valid Config Settings/]
+        configloaded([Configuration Settings Valid])
         
         lookforuserdefinedconfig --> |not specified| searchworkingdir
         searchworkingdir --> |found| readsetting
         searchworkingdir --> |not found| usedefaultconfigsettings --> configloaded
         lookforuserdefinedconfig --> |specified|readsetting
-        readsetting --> |recognized|isvalidsetting
-        isvalidsetting --> |valid|overwritedefaultconfig --> moresettings
-        isvalidsetting --> |invalid|usedefault[Use Default] --> moresettings
+        readsetting --> |recognized and valid|overwritedefaultconfig --> moresettings
+        readsetting --> |recognized but invalid|usedefault[Use Default] --> moresettings
         readsetting --> |unrecognized|addnewsetting --> moresettings
         moresettings --> |yes|readsetting
         moresettings --> |no|configloaded
@@ -72,19 +68,20 @@ graph TD
 
     end
     
-    configloaded --> loadpluginlist
+    configloaded --> registercorehooks[Register Core Hooks]
+    registercorehooks --> loadpluginlist
     subgraph plugins [ ]
-        loadpluginlist[/Get Plugin List From Config/]
+        loadpluginlist[Load Plugins from Config]
         read_next_plugin[/read_next_plugin/]:::filter
         pluginabsolutepath{Absolute Path?}
         all_plugins_loaded[all_plugins_loaded]:::action
-        plugin_dirA[Search for Plugin in Working Directory]
-        plugin_dirB[Search for Plugin in Config Directory]
-        plugin_dirC[Search for Plugin in GraphicDocs Plugin Directory]
+        plugin_dirA[Search for Plugin in System Path]
+        plugin_dirB[Search for Plugin in Working Directory]
+        plugin_dirC[Search for Plugin in Config Directory]
+        plugin_dirD[Search for Plugin in GraphicDocs Plugin Directory]
         plugin_path_before_loading[plugin_path_before_loading]:::filter
         load_plugin[load_plugin]:::action
         plugin_not_found[plugin_not_found]:::action
-        pluginloaded{Plugin Loaded?}
         error_loading_plugin[error_loading_plugin]:::action
         moreplugins{More Plugins?}
 
@@ -92,16 +89,18 @@ graph TD
         loadpluginlist --> |no plugins listed|all_plugins_loaded
         read_next_plugin --> pluginabsolutepath
         pluginabsolutepath --> |yes|plugin_path_before_loading
-        pluginloaded --> |success|moreplugins
-        pluginloaded --> |fail|error_loading_plugin --> moreplugins
         pluginabsolutepath --> |no|plugin_dirA
         plugin_dirA --> |not found|plugin_dirB
         plugin_dirA --> |found|plugin_path_before_loading
         plugin_dirB --> |not found|plugin_dirC
         plugin_dirB --> |found|plugin_path_before_loading
-        plugin_dirC --> |not found|plugin_not_found
+        plugin_dirC --> |not found|plugin_dirD
         plugin_dirC --> |found|plugin_path_before_loading
-        plugin_path_before_loading --> load_plugin --> pluginloaded
+        plugin_dirD --> |not found|plugin_not_found
+        plugin_dirD --> |found|plugin_path_before_loading
+        plugin_path_before_loading --> load_plugin
+        load_plugin --> |success| plugin_loaded:::action --> moreplugins
+        load_plugin --> |fail|error_loading_plugin --> moreplugins
         plugin_not_found --> moreplugins
 
         moreplugins --> |yes| read_next_plugin
@@ -109,22 +108,25 @@ graph TD
     end
 
     all_plugins_loaded --> init[init]:::action
-    init --> core_loaded:::action
-    core_loaded --> get_template_path_from_config
+    init --> loadtemplate
+
     subgraph template [Load Template]
+        loadtemplate[Load Template]
         get_template_path_from_config[/get_template_path_from_config/]:::filter
         templateabsolutepath{Absolute Path?}
         template_path_before_loading[/template_path_before_loading/]:::filter
         load_template[load_template]:::action
-        template_dirA[Search for Template in Working Directory]
-        template_dirB[Search for Template in Config Directory]
-        template_dirC[Search for Template in Doc Generator Directory]
+        template_dirA[Search for Template in System Path]
+        template_dirB[Search for Template in Working Directory]
+        template_dirC[Search for Template in Config Directory]
+        template_dirD[Search for Template in Doc Generator Directory]
         error_loading_template[error_loading_template]:::action
         template_not_found[template_not_found]:::action
         template_loaded[template_loaded]:::action
         usedefaulttemplate[Use Default Template]
         finished_loading_templates[finished_loading_templates]:::action
 
+        loadtemplate --> get_template_path_from_config
         get_template_path_from_config --> |custom path specified|templateabsolutepath
         templateabsolutepath --> |yes|template_path_before_loading
         templateabsolutepath --> |no|template_dirA
@@ -132,8 +134,10 @@ graph TD
         template_dirA --> |found|template_path_before_loading
         template_dirB --> |not found|template_dirC
         template_dirB --> |found|template_path_before_loading
-        template_dirC --> |not found|template_not_found
+        template_dirC --> |not found|template_dirD
         template_dirC --> |found|template_path_before_loading
+        template_dirD --> |not found|template_not_found
+        template_dirD --> |found|template_path_before_loading
 
         template_path_before_loading --> load_template
         load_template --> |success|template_loaded
@@ -146,9 +150,11 @@ graph TD
         usedefaulttemplate --> finished_loading_templates
     end
 
-    finished_loading_templates -->get_parsing_list
+    finished_loading_templates --> core_loaded:::action
+    core_loaded --> parsepython
 
     subgraph parseCode [ ]
+        parsepython[Parse Python Code]
         get_parsing_list[/get_parsing_list/]:::filter
         next_parsing_target[/next_parsing_target/]:::filter
         attempt_parse_pymodule:::action
@@ -161,6 +167,7 @@ graph TD
 
         after_parsing_result[/after_parsing_result/]:::filter
 
+        parsepython --> get_parsing_list
         get_parsing_list --> |no targets provided|no_parsing_targets_specified:::action
         get_parsing_list --> |at least one target specified|next_parsing_target
         next_parsing_target --> attempt_parse_pymodule
@@ -179,9 +186,24 @@ graph TD
 
     end
 
-    final_parsed_object --> build_with_template:::action
-    build_with_template --> all_doc_generation_complete:::action
-    all_doc_generation_complete --> END
+    final_parsed_object --> INITIALIZED([INITIALIZED])
+```
+
+## Building Documentation
+
+After the core object initializes, the `.build()` script generates output.
+
+```mermaid
+%%{init: { 'theme':'dark', 'sequence': {'useMaxWidth':false} } }%%
+graph TD
+    classDef action fill:red,color:white;
+    classDef filter fill:blue,color:white;
+
+    BUILD([BUILD]) --> build_with_template:::action
+
+
+    build_with_template --> |success|all_doc_generation_complete:::action --> END
+    build_with_template --> |fail|error_building_documentation:::action --> END
 
     END([END])
 ```
