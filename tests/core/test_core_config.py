@@ -112,6 +112,11 @@ class TestCoreConfig(unittest.TestCase):
         self.assertEqual(core.user_defined_config_path, bad_config_file_path)
         self.assertEqual(core.config, initial_default_settings)
     
+    def test_empty_config_file(self):
+        """Test a valid config filepath that exists, but has nothing in it."""
+
+        core = Core(self.config_file_path)
+        self.assertEqual(core.config, initial_default_settings)
 
     ###############################################################
     # Changing Config Default Values
