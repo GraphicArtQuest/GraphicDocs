@@ -32,5 +32,7 @@ from tests.test_parse_class import TestParseClass
 
 from tests.test_parse_module import TestParseModule
 
+from tests.core.test_core_config import TestCore
+
 if __name__ == '__main__':
     unittest.main()

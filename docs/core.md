@@ -29,8 +29,6 @@ Using the filter and action hooks, you can create plugins to tie in to them and 
 
 The template gets run at the `build_with_template` action near the end. This takes the output object returned by `final_parsed_object` and builds the documentation files. By default, `GraphicDocs` will use the built in Markdown generating template.
 
-
-
 ## Flow Chart
 
 This chart shows the core engine's logic process while generating documentation. Use it to help identify which filter or action your plugin needs to tie in to.
@@ -119,7 +117,7 @@ graph TD
         template_dirA[Search for Template in System Path]
         template_dirB[Search for Template in Working Directory]
         template_dirC[Search for Template in Config Directory]
-        template_dirD[Search for Template in Doc Generator Directory]
+        template_dirD[Search for Template in GraphicDocs Directory]
         error_loading_template[error_loading_template]:::action
         template_not_found[template_not_found]:::action
         template_loaded[template_loaded]:::action
