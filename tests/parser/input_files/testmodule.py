@@ -6,7 +6,7 @@ from os.path import abspath
 import sys
 import os.path
 
-from tests import blank_parse_docstring_return, blank_parse_class_return
+from .blank_defaults import blank_parse_docstring_return, blank_parse_class_return
 
 class _TestClass2():
     pass

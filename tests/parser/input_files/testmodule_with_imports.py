@@ -3,4 +3,4 @@
 
 from .testmodule import TestClass1
 from .testmodule import test_func1
-import tests.input_files.testmodule_only_docstring
+from . import testmodule_only_docstring

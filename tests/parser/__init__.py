@@ -1,0 +1,27 @@
+
+from .test_parse_docstring_author import TestParseDocstring_Author
+from .test_parse_docstring_copyright import TestParseDocstring_Copyright
+from .test_parse_docstring_deprecated import TestParseDocstring_Deprecated
+from .test_parse_docstring_example import TestParseDocstring_Examples
+from .test_parse_docstring_global import TestParseDocstring_Global
+from .test_parse_docstring_ignore import TestParseDocstring_Ignore
+from .test_parse_docstring_license import TestParseDocstring_License
+from .test_parse_docstring_memberof import TestParseDocstring_Memberof
+from .test_parse_docstring_namespace import TestParseDocstring_Namespace
+from .test_parse_docstring_param import TestParseDocstring_Param
+from .test_parse_docstring_private import TestParseDocstring_Private
+from .test_parse_docstring_public import TestParseDocstring_Public
+from .test_parse_docstring_returns import TestParseDocstring_Returns
+from .test_parse_docstring_throws import TestParseDocstring_Throws
+from .test_parse_docstring_since import TestParseDocstring_Since
+from .test_parse_docstring_todo import TestParseDocstring_Todo
+from .test_parse_docstring_version import TestParseDocstring_Version
+
+from .test_parse_docstring import TestParseDocstring
+
+from .test_parse_function import TestParseFunction
+
+from .test_parse_class import TestParseClass
+
+from .test_parse_module import TestParseModule
+

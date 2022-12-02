@@ -2,8 +2,8 @@ from copy import deepcopy
 import os
 import unittest
 
-from tests.__init__ import blank_parse_docstring_return
-from tests.input_files.testmodule import test_func1
+from .input_files.blank_defaults import blank_parse_docstring_return
+from .input_files.testmodule import test_func1
 from src.parser import parse_function
 
 class TestParseFunction(unittest.TestCase):

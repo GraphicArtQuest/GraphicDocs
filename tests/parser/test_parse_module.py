@@ -3,10 +3,10 @@ import os
 import unittest
 
 from src.parser import parse_module
-from tests.__init__ import blank_parse_docstring_return, blank_parse_class_return, blank_parse_module_return, blank_parsed_function_return
-import tests.input_files.testmodule as testmodule
-import tests.input_files.testmodule_only_docstring as testmodule_only_docstring
-import tests.input_files.testmodule_with_imports as testmodule_with_imports
+from .input_files.blank_defaults import blank_parse_docstring_return, blank_parse_class_return, blank_parse_module_return, blank_parsed_function_return
+from .input_files import testmodule
+from .input_files import testmodule_only_docstring
+from .input_files import testmodule_with_imports
 
 class TestParseModule(unittest.TestCase):
 
@@ -38,7 +38,7 @@ class TestParseModule(unittest.TestCase):
         self.maxDiff = None
 
         expected_parsed_module_return = deepcopy(blank_parse_module_return)
-        expected_parsed_module_return["name"] = "tests.input_files.testmodule"
+        expected_parsed_module_return["name"] = "tests.parser.input_files.testmodule"
 
         # Classes will always show up in alphabetical order, not the order they appear in the file
         expected_parsed_module_return["classes"] = {}
@@ -93,7 +93,7 @@ class TestParseModule(unittest.TestCase):
         self.maxDiff = None
 
         expected_parsed_module_return = deepcopy(blank_parse_module_return)
-        expected_parsed_module_return["name"] = "tests.input_files.testmodule_only_docstring"
+        expected_parsed_module_return["name"] = "tests.parser.input_files.testmodule_only_docstring"
         expected_parsed_module_return["sourcefile"] = os.path.abspath(testmodule_only_docstring.__file__)
         expected_parsed_module_return["imported"] = {'classes': None, 'functions': None, 'modules': None}
 
@@ -106,12 +106,12 @@ class TestParseModule(unittest.TestCase):
         self.maxDiff = None
 
         expected_parsed_module_return = deepcopy(blank_parse_module_return)
-        expected_parsed_module_return["name"] = "tests.input_files.testmodule_with_imports"
+        expected_parsed_module_return["name"] = "tests.parser.input_files.testmodule_with_imports"
         expected_parsed_module_return["sourcefile"] = os.path.abspath(testmodule_with_imports.__file__)
         expected_parsed_module_return["imported"] = {
-            "classes": [('tests.input_files.testmodule', 'TestClass1')],
-            "functions": [('tests.input_files.testmodule', 'test_func1')],
-            "modules": ["tests"]
+            "classes": [('tests.parser.input_files.testmodule', 'TestClass1')],
+            "functions": [('tests.parser.input_files.testmodule', 'test_func1')],
+            "modules": ["testmodule_only_docstring"]
         }
 
         parsed_return_dict = parse_module(testmodule_with_imports)

@@ -56,7 +56,7 @@ def parse_docstring(docstring: str) -> dict:
         "memberof": parse_docstring_functions.get_memberof(docstring),
         "namespaces": parse_docstring_functions.get_namespaces(docstring),
         "parameters": parse_docstring_functions.get_parameters(docstring),
-        "private": parse_docstring_functions.get_private(docstring), # If False, this implicitly makes this a public module
+        "private": parse_docstring_functions.get_private(docstring), # If False, implicitly makes this a public module
         "returns": parse_docstring_functions.get_returns(docstring),
         "since": parse_docstring_functions.get_since(docstring),
         "throws": parse_docstring_functions.get_throws(docstring),
@@ -228,8 +228,8 @@ def parse_class(class_ref) -> dict:
             class_methods[parsed_function["name"]] = parsed_function
         
         if inspect.isclass(attribute):
-            parsed_subclass = parse_class(attribute)
-            class_subclasses[parsed_subclass["name"]] = parsed_subclass # Recursively parse this subclass using this parsing func
+            subclass = parse_class(attribute)
+            class_subclasses[subclass["name"]] = subclass # Recursively parse this subclass using this parsing func
 
     if len(class_properties) == 0:
         class_properties = None
