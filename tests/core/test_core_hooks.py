@@ -202,12 +202,12 @@ class TestCoreHooks(unittest.TestCase):
         hooks.add("the_test_hook", self.callback_action, 6.4)
         hooks.add("the_test_hook", self.callback_action)
         hooks.add("the_test_hook", Core.validate_filepath)  # Just using various functions as callbacks for testing
-        hooks.add("the_test_hook", unittest.findTestCases)
+        hooks.add("the_test_hook", unittest.removeResult)
 
         expected = {
             "the_test_hook": {
                 6: [self.callback_action],
-                10: [self.callback_action, Core.validate_filepath, unittest.findTestCases],
+                10: [self.callback_action, Core.validate_filepath, unittest.removeResult],
             }
         }
         received = hooks._registered
@@ -219,7 +219,7 @@ class TestCoreHooks(unittest.TestCase):
         expected = {
             "the_test_hook": {
                 6: [self.callback_action],
-                10: [self.callback_action, unittest.findTestCases],
+                10: [self.callback_action, unittest.removeResult],
             }
         }
         self.assertTrue(hooks.remove("the_test_hook", Core.validate_filepath, 10)) # Deleted unique one
@@ -235,12 +235,12 @@ class TestCoreHooks(unittest.TestCase):
         hooks.add("the_test_hook", Core.validate_filepath, 6.4)
         hooks.add("the_test_hook", self.callback_action, 10)
         hooks.add("the_test_hook", Core.validate_filepath)  # Just using various functions as callbacks for testing
-        hooks.add("the_test_hook", unittest.findTestCases)
+        hooks.add("the_test_hook", unittest.removeResult)
 
         expected = {
             "the_test_hook": {
                 6: [self.callback_action, Core.validate_filepath],
-                10: [self.callback_action, Core.validate_filepath, unittest.findTestCases],
+                10: [self.callback_action, Core.validate_filepath, unittest.removeResult],
             }
         }
         received = hooks._registered
@@ -251,7 +251,7 @@ class TestCoreHooks(unittest.TestCase):
         expected = {
             "the_test_hook": {
                 6: [self.callback_action],
-                10: [self.callback_action, Core.validate_filepath, unittest.findTestCases],
+                10: [self.callback_action, Core.validate_filepath, unittest.removeResult],
             }
         }
         self.assertTrue(hooks.remove("the_test_hook", Core.validate_filepath, "6")) # Priority coercible to integer
@@ -391,10 +391,21 @@ class TestCoreHooks(unittest.TestCase):
         self.assertTrue(hooks.has("the_test_hook2", False)) # False coerces to priority of 0
         self.assertFalse(hooks.has("the_test_hook2", True)) # True coerces to priority of 1, which is not in the hook
 
-        
+
     ###############################################################
     # Core - Do Action
     ###############################################################
+
+    def test_core_hooks_do_action_one_arg_only(self):
+        """ Should not be able to add an action that includes more than one argument"""
+
+        core = Core()
+
+        def test_callback(arg1, arg2):
+            pass
+        
+        with self.assertRaises(HookException):
+            core.actions.add("test_hook", test_callback)
 
     def test_core_hooks_do_action(self):
         """ Running the do action script should run all callbacks under that registered name.
@@ -475,3 +486,64 @@ class TestCoreHooks(unittest.TestCase):
         # Good required arguments with unused arguments and optional args omitted
         core.do_action("second_test_hook", {"mandatory": "E", "unused_arg": None, "another_unused_arg": [1, 2, 3]})
         self.assertEqual("ADCBBCCDCBBCCDDDFEEFFQEEWQ", testval)
+
+
+    ###############################################################
+    # Core - Apply Filter
+    ###############################################################
+
+    def test_core_hooks_apply_filter_one_arg_only(self):
+        """ Should not be able to add an action that includes more than one argument"""
+
+        core = Core()
+
+        def test_callback(arg1, arg2):
+            pass
+        
+        with self.assertRaises(HookException):
+            core.filters.add("test_hook", test_callback)
+
+    def test_core_hooks_apply_filter(self):
+        """ Running the apply filter script should run all callbacks under that registered name. These should all by
+            executed in priority order.
+        
+            Filter scripts should require a single argument. 
+            
+            Trying to apply a filter should not run hooks that were not registered or do not exactly match case.
+        """
+
+        self.maxDiff = None
+        core = Core()
+
+        def test_filter_add(arg1: int) -> int:
+            return arg1 + 1
+
+        def test_filter_concat(arg: dict) -> dict:
+            return arg["first"] + arg["second"]
+            
+        def test_filter_concat2(arg: str) -> dict:
+            return "Q" + arg
+            
+        def test_filter_concat3(arg: str) -> dict:
+            return "X" + arg
+
+        core.filters.add("test_filter1", test_filter_add)
+        core.filters.add("test_filter_2", test_filter_concat)
+
+        core.filters.add("priority_test", test_filter_concat3, 5)
+        core.filters.add("priority_test", test_filter_concat2)
+        core.filters.add("priority_test", test_filter_concat3)
+        core.filters.add("priority_test", test_filter_concat3, 22)
+        core.filters.add("priority_test", test_filter_concat2, 33)
+        
+        # Return is same format as input
+        self.assertEqual(2, core.apply_filter("test_filter1", 1))
+
+        # Return is a different format than input
+        self.assertEqual("Hi there", core.apply_filter("test_filter_2", {"first": "Hi ", "second": "there"}))
+        
+        # Should do nothing because filter hook does not exist
+        self.assertEqual(None, core.apply_filter("FILTER_DOES_NOT_EXIST", 1))
+
+        # Verify filters apply sequentially and in proper order
+        self.assertEqual("QXXQXA", core.apply_filter("priority_test", "A"))

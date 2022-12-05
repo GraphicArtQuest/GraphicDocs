@@ -17,6 +17,10 @@ initial_default_settings = {
     "verbose": False                    # If True, will output console status messages
 }
 
+class HookException(Exception):
+    """ Error to raise in the event a hook issue cannot be adequately resolved."""
+    def __init__(self, message):
+        super().__init__(message)
 
 class Core():
     def __init__(self, user_defined_config: str=""):
@@ -129,8 +133,20 @@ class Core():
     def do_action(self, action_name: str, args: dict = {}) -> None:
         """ Executes all actions with the provided name in order of priority.
         
-            @param action_name The name of the action hook to run. It is case sensitive.
+            @param action_name The case sensitive name of the action hook to run
             @param args An optional dictionary of arguments to pass to the callback functions
+            @example
+            testval = 2
+            def test_func(input: int)
+                nonlocal testval
+                testval *= 2
+            
+            core = Core()
+            core.filters.add("test_actions", test_func, 5)
+            core.filters.add("test_actions", test_func)
+            core.filters.add("test_actions", test_func, 15)
+            
+            core.apply_filter("test_actions", 2) # testval = 16
         """
         if action_name not in self.actions._registered:
             if self.config["verbose"]:
@@ -147,10 +163,35 @@ class Core():
                 else:
                     action()
 
-class HookException(Exception):
-    """ Error to raise in the event a hook issue cannot be adequately resolved."""
-    def __init__(self):
-        super().__init__("Hook priority value must be an integer greater than or equal to 0.")
+    def apply_filter(self, filter_name: str, filter_input: any) -> any:
+        """ Applies all filters with the provided name to the provided input sequentially and in order of priority.
+            In most cases, the filtered response should match input format, but this is not strictly necessary.
+        
+            @param filter_name The case sensitive name of the filter to apply
+            @param filter_input An input argument to modify
+            @example
+            def test_func(input: int)
+                return input * 2
+            
+            core = Core()
+            core.filters.add("test_filters", test_func, 5)
+            core.filters.add("test_filters", test_func)
+            core.filters.add("test_filters", test_func, 15)
+            
+            final_val = core.apply_filter("test_filters", 2) # Returns 16
+        """
+
+        if filter_name not in self.filters._registered:
+            if self.config["verbose"]:
+                print(f"Filter hook '{filter_name}' not found.")
+            return
+
+        for priority in sorted(self.filters._registered[filter_name]):
+            for filter in self.filters._registered[filter_name][priority]:
+                # Apply filters to the input in sequential order until all have been applied
+                filter_input = filter(filter_input)
+
+        return filter_input
 
 class Hooks():
     def __init__(self) -> None:
@@ -180,10 +221,14 @@ class Hooks():
             try:
                 priority = int(priority)
             except:
-                raise HookException
+                raise HookException("Hook priority value must be type integer or float.")
 
         if int(priority) < 0:
-            raise HookException
+            raise HookException("Hook priority value must be an integer greater than or equal to 0.")
+
+        args = inspect.getfullargspec(callback).args
+        if len(args) > 1:
+            raise HookException("Hooks may only take a single argument. Use a list/tuple/dict for more args.")
 
         if hook_name in self._registered:
             if priority in self._registered[hook_name]:
