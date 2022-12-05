@@ -390,3 +390,88 @@ class TestCoreHooks(unittest.TestCase):
         self.assertFalse(hooks.has("the_test_hook1", self.callback_action)) # Priority can't be callback function
         self.assertTrue(hooks.has("the_test_hook2", False)) # False coerces to priority of 0
         self.assertFalse(hooks.has("the_test_hook2", True)) # True coerces to priority of 1, which is not in the hook
+
+        
+    ###############################################################
+    # Core - Do Action
+    ###############################################################
+
+    def test_core_hooks_do_action(self):
+        """ Running the do action script should run all callbacks under that registered name.
+        
+            Do action scripts should allow mandatory or optional arguments to be passed in. It should allow both
+            callbacks that require arguments and those that don't. These should all by executed in priority order.
+            
+            Running the do action script should not run hooks that were not registered or do not exactly match case.
+        """
+
+        self.maxDiff = None
+        core = Core()
+
+        testval = "A"
+        def test_callback1(args: dict):
+            nonlocal testval
+            mandatory_arg: int = args["mandatory"]
+            testval += mandatory_arg
+        
+        def test_callback2(args: dict):
+            nonlocal testval
+            try:
+                optional_arg: int = args["optional"]
+            except:
+                optional_arg = "Q"  # Optional fallback
+            testval += optional_arg
+
+        def test_callback3(args: dict):
+            nonlocal testval
+            mandatory_arg: int = args["mandatory"]
+            try:
+                optional_arg: int = args["optional"]
+            except:
+                optional_arg = "W" # Optional fallback
+            testval += mandatory_arg + optional_arg
+
+        def test_callback4():
+            nonlocal testval
+            testval += "D"
+
+        core.actions.add("test_hook", test_callback1)
+        core.actions.add("test_hook", test_callback2, 5)
+        core.actions.add("test_hook", test_callback3, 25)
+        core.actions.add("test_hook", test_callback4, 0)
+        core.actions.add("test_hook", test_callback2, 25)
+
+        core.actions.add("second_test_hook", test_callback1)
+        core.actions.add("second_test_hook", test_callback2, 4)
+        core.actions.add("second_test_hook", test_callback3, 755)
+        core.actions.add("second_test_hook", test_callback2, 755)
+        
+        core.actions.add("third_test_hook", test_callback4, 0)
+
+        core.do_action("test_hook", {"mandatory": "B", "optional": "C"})
+        self.assertEqual("ADCBBCC", testval)
+        
+        # Try to run hooks that do not exist
+        core.do_action("test_hook_that_does_not_exist")
+        core.do_action("TEST_HOOK") # This function is case sensitive
+        self.assertEqual("ADCBBCC", testval)
+
+        # Run the good test action hook again
+        core.do_action("test_hook", {"mandatory": "B", "optional": "C"})
+        self.assertEqual("ADCBBCCDCBBCC", testval)
+        
+        core.do_action("third_test_hook")
+        self.assertEqual("ADCBBCCDCBBCCD", testval)
+        
+        core.do_action("third_test_hook", {})   # Pass empty arguments
+        self.assertEqual("ADCBBCCDCBBCCDD", testval)
+        
+        core.do_action("third_test_hook", {"unused_arg": None})   # Pass unused arguments
+        self.assertEqual("ADCBBCCDCBBCCDDD", testval)
+        
+        core.do_action("second_test_hook", {"optional": "F", "mandatory": "E"})
+        self.assertEqual("ADCBBCCDCBBCCDDDFEEFF", testval)
+        
+        # Good required arguments with unused arguments and optional args omitted
+        core.do_action("second_test_hook", {"mandatory": "E", "unused_arg": None, "another_unused_arg": [1, 2, 3]})
+        self.assertEqual("ADCBBCCDCBBCCDDDFEEFFQEEWQ", testval)

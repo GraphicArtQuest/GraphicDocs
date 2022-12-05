@@ -125,7 +125,28 @@ class Core():
         except:
             # Trying to open a config file that doesn't exist will throw an error. Just use the default config values.
             pass
-    
+
+    def do_action(self, action_name: str, args: dict = {}) -> None:
+        """ Executes all actions with the provided name in order of priority.
+        
+            @param action_name The name of the action hook to run. It is case sensitive.
+            @param args An optional dictionary of arguments to pass to the callback functions
+        """
+        if action_name not in self.actions._registered:
+            if self.config["verbose"]:
+                print(f"Action hook '{action_name}' not found.")
+            return
+
+        for priority in sorted(self.actions._registered[action_name]):
+            # Actions must be carried out in priority order. Cannot rely on a dict structure to self-sort.
+            for action in self.actions._registered[action_name][priority]:
+                # Within the priority level though, actions should carry out in the order added.
+                if args and inspect.getfullargspec(action).args:
+                    # Trying to execute with arguments will error if the callback doesn't expect or need them.
+                    action(args)
+                else:
+                    action()
+
 class HookException(Exception):
     """ Error to raise in the event a hook issue cannot be adequately resolved."""
     def __init__(self):
