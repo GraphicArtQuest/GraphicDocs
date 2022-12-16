@@ -65,20 +65,20 @@ graph TD
         readsetting --> |All settings validated|configloaded
 
     end
-    
-    configloaded --> registercorehooks[Register Core Hooks]
-    registercorehooks --> loadpluginlist
+
+    configloaded --> register_core_hooks[Register Core Hooks]
+    register_core_hooks --> loadpluginlist
     subgraph plugins [ ]
         loadpluginlist[Load Plugins from Config]
         read_next_plugin[/read_next_plugin/]:::filter
         pluginabsolutepath{Absolute Path?}
         all_plugins_loaded[all_plugins_loaded]:::action
-        plugin_dirA[Search for Plugin in System Path]
-        plugin_dirB[Search for Plugin in Working Directory]
-        plugin_dirC[Search for Plugin in Config Directory]
+        plugin_dirA[Search for Plugin in Working Directory]
+        plugin_dirB[Search for Plugin in Config Directory]
+        plugin_dirC[Search for Plugin in System Path]
         plugin_dirD[Search for Plugin in GraphicDocs Plugin Directory]
         plugin_path_before_loading[plugin_path_before_loading]:::filter
-        load_plugin[load_plugin]:::action
+        load_plugin[Load Plugin]
         plugin_not_found[plugin_not_found]:::action
         error_loading_plugin[error_loading_plugin]:::action
         moreplugins{More Plugins?}
@@ -113,10 +113,10 @@ graph TD
         get_template_path_from_config[/get_template_path_from_config/]:::filter
         templateabsolutepath{Absolute Path?}
         template_path_before_loading[/template_path_before_loading/]:::filter
-        load_template[load_template]:::action
-        template_dirA[Search for Template in System Path]
-        template_dirB[Search for Template in Working Directory]
-        template_dirC[Search for Template in Config Directory]
+        load_template[Load Template as Reference]
+        template_dirA[Search for Template in Working Directory]
+        template_dirB[Search for Template in Config Directory]
+        template_dirC[Search for Template in System Path]
         template_dirD[Search for Template in GraphicDocs Directory]
         error_loading_template[error_loading_template]:::action
         template_not_found[template_not_found]:::action

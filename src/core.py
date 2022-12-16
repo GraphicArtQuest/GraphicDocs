@@ -1,11 +1,14 @@
 """This is the core class."""
 
 from copy import deepcopy
+import importlib.util
 import inspect
 import json
 import os
 import re
 import typing
+
+import src.plugins as plugins
 
 initial_default_settings = {
     "destination": os.getcwd(),         # Absolute or relative destination file path for generated files
@@ -35,7 +38,10 @@ class Core():
         self.filters = Hooks()
         self.user_defined_config_path = str(user_defined_config)
         self._process_user_defined_config()
-    
+        self._load_core_hooks()
+        self._load_plugins()
+        self.do_action("init")
+
     @staticmethod
     def validate_filepath(input_filepath: str) -> str:
         """ Validate a file path by returning a valid absolute file path under any circumstance.
@@ -129,6 +135,103 @@ class Core():
         except:
             # Trying to open a config file that doesn't exist will throw an error. Just use the default config values.
             pass
+    
+    def _load_core_hooks(self) -> None:
+        """ Loads a series of initial action hooks that will print out a description of which hook is executing and
+            when to help users debug the program. These are loaded as priority 0 so they are the first to execute
+            when the core fires it. It will only output if the configuration has 'verbose' set to True.
+        """
+        def core_action_hook():
+            if self.config["verbose"]:
+                name = self.actions.doing["hook_name"]
+                print(f"Executing action hook '{name}'.")
+                
+        def core_filter_hook(input: any = None) -> any:
+            if self.config["verbose"]:
+                name = self.filters.doing["hook_name"]
+                print(f"Applying filter '{name}' to {input}.")
+            return input
+        
+        self.actions.add("plugin_not_found", core_action_hook, 0)
+        self.actions.add("error_loading_plugin", core_action_hook, 0)
+        self.actions.add("plugin_loaded", core_action_hook, 0)
+        self.actions.add("all_plugins_loaded", core_action_hook, 0)
+        self.actions.add("init", core_action_hook, 0)
+        
+        self.filters.add("read_next_plugin", core_filter_hook, 0)
+        self.filters.add("plugin_path_before_loading", core_filter_hook, 0)
+        
+
+    def _load_plugins(self) -> None:
+        """ Loads all plugins from the config file. If not provided an absolute file path, it will traverse through a
+            series of possible directories to try to resolve it using the following priorities:
+
+            1. The working directory where the main script was run from
+            2. The config file directory
+            3. The system path (e.g. you build and install plugins as packages using PIP)
+            4. The GraphicDocs built-in plugin directory
+            
+            This is the first location while initializing where actions/filters get executed because this is the first
+            location a user can tap in their code to access them.
+        """
+
+        def load_by_spec(input_path: str) -> None:
+            """ Tries to load a plugin from spec based on the file location.
+                @param input_path An absolute or relative path to the plugin 
+            """
+            nonlocal loaded_plugin
+            input_path = self.apply_filter("plugin_path_before_loading", input_path)
+            if os.path.isdir(input_path):
+                # Convert a package path into the module that initializes it
+                input_path = os.path.join(formatted_path, "__init__.py")
+            elif os.path.exists(input_path + ".py"):
+                # Allow providing plugin modules without the .py extension
+                input_path = input_path + ".py"
+
+            spec = importlib.util.spec_from_file_location("the_plugin", input_path)
+            loaded_plugin = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(loaded_plugin)
+        
+        for plugin in self.config["plugins"]:
+            plugin = self.apply_filter("read_next_plugin", plugin)
+            loaded_plugin = None
+            try:
+                # Attempt to load from absolute path. If not an absolute path, it will try to load from a relative path
+                #   to the current working directory using the "./" or "../" indicators.
+                load_by_spec(plugin)
+            except:
+                try:
+                    # Attempts to load from working directory.
+                    formatted_path = os.path.join(os.getcwd(), plugin)
+                    load_by_spec(formatted_path)
+                except:
+                    try:
+                        # Attempt to load from the config file directory
+                        formatted_path = os.path.join(os.path.dirname(self.user_defined_config_path), plugin)
+                        load_by_spec(formatted_path)
+                    except:
+                        try:
+                            # Attempts to load from the system path. 
+                            plugin = self.apply_filter("plugin_path_before_loading", plugin)
+                            loaded_plugin = __import__(plugin)
+                        except:
+                            try:
+                                # Attempt to load from the built in plugins directory
+                                # Created with help from https://stackoverflow.com/a/6677505/6186333
+                                plugin = self.apply_filter("plugin_path_before_loading", plugin)
+                                loaded_plugin = getattr(__import__(plugins.__package__, fromlist=[plugin]), plugin)
+                            except:
+                                # Plugin didn't exist
+                                self.do_action('plugin_not_found')
+
+            # Once the plugin was resolved try to load it
+            try:
+                loaded_plugin.load(self)
+                self.do_action('plugin_loaded')
+            except:
+                self.do_action('error_loading_plugin')
+
+        self.do_action('all_plugins_loaded')
 
     def do_action(self, action_name: str, args: dict = {}) -> None:
         """ Executes all actions with the provided name in order of priority.
@@ -157,6 +260,9 @@ class Core():
             # Actions must be carried out in priority order. Cannot rely on a dict structure to self-sort.
             for action in self.actions._registered[action_name][priority]:
                 # Within the priority level though, actions should carry out in the order added.
+                self.actions.doing["hook_name"] = action_name
+                self.actions.doing["callback"] = action
+                self.actions.doing["priority"] = priority
                 if args and inspect.getfullargspec(action).args:
                     # Trying to execute with arguments will error if the callback doesn't expect or need them.
                     action(args)
@@ -184,12 +290,14 @@ class Core():
         if filter_name not in self.filters._registered:
             if self.config["verbose"]:
                 print(f"Filter hook '{filter_name}' not found.")
-            return
-
-        for priority in sorted(self.filters._registered[filter_name]):
-            for filter in self.filters._registered[filter_name][priority]:
-                # Apply filters to the input in sequential order until all have been applied
-                filter_input = filter(filter_input)
+        else:
+            for priority in sorted(self.filters._registered[filter_name]):
+                for filter in self.filters._registered[filter_name][priority]:
+                    # Apply filters to the input in sequential order until all have been applied
+                    self.filters.doing["hook_name"] = filter_name
+                    self.filters.doing["callback"] = filter
+                    self.filters.doing["priority"] = priority
+                    filter_input = filter(filter_input)
 
         return filter_input
 
@@ -214,7 +322,7 @@ class Hooks():
             Hooks.add("my_hook_name", my_callback_function) # Implicitly assumes priority 10
             Hooks.add("my_hook_name", my_callback_function, 755) 
         """
-        
+
         try:
             priority = round(float(priority))
         except:
@@ -237,7 +345,7 @@ class Hooks():
                 self._registered[hook_name][priority] = [callback] # Hook priority did not exist
         else:
             self._registered[hook_name] = {priority: [callback]} # Hook didn't exist
-        
+
         return True
 
     def remove(self, hook_name: str, callback: typing.Callable, priority: int = 10) -> bool:
@@ -265,7 +373,7 @@ class Hooks():
             # Try to remove priority if there are no more under this dict
             if len(self._registered[hook_name][priority]) == 0:
                 del self._registered[hook_name][priority]
-                
+
             # Try to remove hook if there are no more under this dict
             if len(self._registered[hook_name]) == 0:
                 del self._registered[hook_name]
