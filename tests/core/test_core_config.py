@@ -450,7 +450,6 @@ class TestCoreConfig(unittest.TestCase):
             (unittest, False),   # Module references
             (Core._process_user_defined_config, False),   # Function references,
             (os.getcwd(), True),
-            
         ]
 
         for input in inputs:
@@ -467,6 +466,51 @@ class TestCoreConfig(unittest.TestCase):
 
             expected = input[1]
             received = core.config["verbose"]
+
+            self.assertEqual(expected, received)
+
+    def test_config_file_changes_default_value_console_colors(self):
+        """Test the config file accepts valid input for the 'console_colors' variable."""
+        self.maxDiff = None
+
+        inputs = [
+            # Tuple of: [1] = Variable to JSON stringify, [2] = Expected processed response back
+            ('', False),
+            ('2', True),
+            (2, True),
+            (3.14159, True),
+            ("abc", True),
+            (False, False),
+            (True, True),
+            ({"a": "Some String"}, True),
+            (["A", "B", "C"], True),
+            (["Some String"], True),
+            (("A", "B", "C"), True),
+            (None, False),
+            ([], False),
+            ((), False),
+            (0, False),
+
+            (str, False),    # Class references
+            (unittest, False),   # Module references
+            (Core._process_user_defined_config, False),   # Function references,
+            (os.getcwd(), True),
+        ]
+
+        for input in inputs:
+            try:
+                config_text = json.dumps({"console_colors": input[0]})
+            except:
+                config_text = json.dumps({"console_colors": ""}) # Object refs can't serialize, so just use empty string
+
+            tempfile = open(self.config_file_path, "w+")
+            tempfile.write(config_text)
+            tempfile.close()
+
+            core = Core(self.config_file_path)
+
+            expected = input[1]
+            received = core.config["console_colors"]
 
             self.assertEqual(expected, received)
 
@@ -504,6 +548,5 @@ class TestCoreConfig(unittest.TestCase):
 
             expected = input[1]
             received = core.config[input[0]]
-            # print("\n" +str(input[0]) + "\nExpected: ", expected, "\nReceived: ", received)
 
             self.assertEqual(expected, received)

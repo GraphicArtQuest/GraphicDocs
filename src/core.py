@@ -1,6 +1,7 @@
 """This is the core class."""
 
 from copy import deepcopy
+from enum import Enum
 import importlib.util
 import inspect
 import json
@@ -11,14 +12,39 @@ import typing
 import src.plugins as plugins
 
 initial_default_settings = {
+    "console_colors": True,             # Set to False to remove colored output from
     "destination": os.getcwd(),         # Absolute or relative destination file path for generated files
     "destination_overwrite": False,     # If True, will overwrite any file of the same name that already exists there
     "plugins": [],                      # Ordered list of plugin names to use. Will resolve to absolute file paths.
     "source": [],                       # A list of modules, functions, classes, or absolute/relative paths to source files.
     "source_exclude_pattern": [],       # A regex pattern to exclude matching subfiles during parsing
     "template": os.path.join(os.getcwd(), "graphic_md"),  # Defaults to the Graphic Markdown template folder in the GraphicDocs source
-    "verbose": False                    # If True, will output console status messages
+    "verbose": True                     # If False, will not output console status messages
 }
+
+class ConsoleColorCodes(Enum):
+    """Provides standardized console colors to use as escape codes for terminal debugging.
+
+    This Enum provides standardized terminal escape sequences that correspond to colored text when printing to the
+    terminal. This allows a debugging programmer to more easily separate the output and see what is going on.
+
+    For accessibility for the color blind, users can disable this feature and print only black and white to the console.
+    """
+    CONTROL = '\033[35m'        # Purple
+    PYTHON = '\033[33m'         # Yellow
+    ACTION = '\033[91m'         # Red
+    FILTER = '\033[94m'         # Blue
+    QUOTE = '\033[92m'          # Green
+    ENDC = NONE = '\033[0m'     # Required end code to tell the console to stop escaping
+
+def FormatForConsole(message: str, type: ConsoleColorCodes = ConsoleColorCodes.NONE) -> str:
+    """ 
+        Applies color to a message that will output in the console.
+
+        @param message The message to apply colored escape codes to
+        @returns The same message wrapped in the appropriate formatting code
+    """
+    return type.value + str(message) + ConsoleColorCodes.ENDC.value
 
 class HookException(Exception):
     """ Error to raise in the event a hook issue cannot be adequately resolved."""
@@ -31,6 +57,7 @@ class Core():
 
         @param user_defined_config An absolute or relative path to a configuration file. If this file path is invalid
             or does not exist, it will cause no errors. Default configs will load.
+        @see The Core flowchart.
         """
 
         self.actions = Hooks()
@@ -38,9 +65,10 @@ class Core():
         self.filters = Hooks()
         self.user_defined_config_path = str(user_defined_config)
         self._process_user_defined_config()
-        self._load_core_hooks()
+        self._register_core_hooks()
         self._load_plugins()
         self.do_action("init")
+        self.console(FormatForConsole("GraphicDocs Core object initialized successfully.", ConsoleColorCodes.CONTROL))
 
     @staticmethod
     def validate_filepath(input_filepath: str) -> str:
@@ -76,6 +104,32 @@ class Core():
             return os.getcwd()  # Trying to use .abspath() on memory references (e.g. function) will throw error.
                                 #   In that case, just send back working dir
     
+    def console(self, message: str, output_to_console: bool = True) -> str:
+        """ Creates pretty formatted text and logs it to the console.
+
+            @param message The message to log to the console
+            @param output_to_console If True, this message will log to the console. Otherwise, it won't. It can be
+                useful to set this to false to obtain the pretty formatted error message for use elsewhere. This allows
+                'verbose' to be on while not outputting this particular text to the console.
+            @returns A string representation of message
+            @example
+            console("I am a console message.")
+            console("I am a 'console' message.")    # Will automatically wrap the quoted text in a green color.
+        """
+        # Automatically place quoted text in its own pattern
+        quote_color_pattern = r"'" + ConsoleColorCodes.QUOTE.value + "\\1" + ConsoleColorCodes.ENDC.value + "'"
+        formatted_msg = re.sub(r"'([^']*)'", quote_color_pattern, message)
+
+        if not self.config["console_colors"]:
+            # Remove any color codes if this config variable is not set
+            for code in ConsoleColorCodes:
+                formatted_msg = formatted_msg.replace(code.value, "")
+
+        if self.config["verbose"] and output_to_console:
+            print(formatted_msg)
+        
+        return formatted_msg
+    
     def _process_user_defined_config(self) -> None:
         """ If the user didn't provide a config, look for one in the working directory called 'graphicdocs.config'.
             If it finds one there, use that. Otherwise, it will assume the defaults.
@@ -95,14 +149,18 @@ class Core():
             - `verbose`: If True, will output console status messages. Converts truthy or falsy inputs to booleans.
         """
 
+        self.console(FormatForConsole("Setting initial GraphicDocs configuration.", ConsoleColorCodes.CONTROL))
+
         if not self.user_defined_config_path:
             # Nothing specified on initiation, check the working directory for the default config file name
             default_config_path = os.path.join(os.getcwd(), "graphicdocs.config")
             if os.path.exists(default_config_path):
                 # Found a config file in the working directory, use that
                 self.user_defined_config_path = default_config_path
+                self.console("Found configuration file 'graphicdocs.config' in the working directory. Loading...")
             else:
                 # There is no user defined config. Will use defaults. Do not try to proceed further.
+                self.console("No user defined configuration specified. Continuing with default settings...")
                 return
 
         # PROCESS CONFIG SETTINGS
@@ -110,11 +168,12 @@ class Core():
             with open(self.user_defined_config_path) as user_config_file:
                 user_config_data = json.loads(user_config_file.read())
                 for key in user_config_data:
+                    action = "Updated existing"
 
                     if key == "destination":
                         self.config[key] = self.validate_filepath(user_config_data[key])
 
-                    elif key in ["destination_overwrite", "verbose"]:
+                    elif key in ["console_colors", "destination_overwrite", "verbose"]:
                         self.config[key] = bool(user_config_data[key])
 
                     elif key in ["plugins", "source", "source_exclude_pattern"]:
@@ -127,40 +186,39 @@ class Core():
                         
                     elif key == "template":
                         self.config[key] = str(user_config_data[key])
-                    
+
                     else:
                         self.config[key] = user_config_data[key]
+                        action = "Added new"
+
+                    self.console(f"{action} key '{key}' in the core configuration.")
 
                 user_config_file.close()
         except:
             # Trying to open a config file that doesn't exist will throw an error. Just use the default config values.
-            pass
-    
-    def _load_core_hooks(self) -> None:
-        """ Loads a series of initial action hooks that will print out a description of which hook is executing and
-            when to help users debug the program. These are loaded as priority 0 so they are the first to execute
-            when the core fires it. It will only output if the configuration has 'verbose' set to True.
-        """
-        def core_action_hook():
-            if self.config["verbose"]:
-                name = self.actions.doing["hook_name"]
-                print(f"Executing action hook '{name}'.")
-                
-        def core_filter_hook(input: any = None) -> any:
-            if self.config["verbose"]:
-                name = self.filters.doing["hook_name"]
-                print(f"Applying filter '{name}' to {input}.")
-            return input
+            self.console("No valid configuration file found. Continuing with default settings...")
+
+    def _register_core_hooks(self) -> None:
+        """ Registers a series of action hooks and filters that the core class uses.
         
+            These are loaded with a dummy function as priority 0 so they are the first to execute when the core fires.
+        """
+        self.console("Registering core hooks...")
+
+        def core_action_hook():
+            pass
+
+        def core_filter_hook(input: any = None) -> any:
+            return input
+
         self.actions.add("plugin_not_found", core_action_hook, 0)
         self.actions.add("error_loading_plugin", core_action_hook, 0)
         self.actions.add("plugin_loaded", core_action_hook, 0)
         self.actions.add("all_plugins_loaded", core_action_hook, 0)
         self.actions.add("init", core_action_hook, 0)
-        
+
         self.filters.add("read_next_plugin", core_filter_hook, 0)
         self.filters.add("plugin_path_before_loading", core_filter_hook, 0)
-        
 
     def _load_plugins(self) -> None:
         """ Loads all plugins from the config file. If not provided an absolute file path, it will traverse through a
@@ -174,6 +232,7 @@ class Core():
             This is the first location while initializing where actions/filters get executed because this is the first
             location a user can tap in their code to access them.
         """
+        self.console("Loading plugins...")
 
         def load_by_spec(input_path: str) -> None:
             """ Tries to load a plugin from spec based on the file location.
@@ -198,40 +257,48 @@ class Core():
             try:
                 # Attempt to load from absolute path. If not an absolute path, it will try to load from a relative path
                 #   to the current working directory using the "./" or "../" indicators.
+                self.console(f"Attempting to load plugin '{plugin}' from absolute path...")
                 load_by_spec(plugin)
             except:
                 try:
                     # Attempts to load from working directory.
                     formatted_path = os.path.join(os.getcwd(), plugin)
+                    self.console(f"Could not load plugin '{plugin}'. Attempting to load from working directory...")
                     load_by_spec(formatted_path)
                 except:
                     try:
                         # Attempt to load from the config file directory
                         formatted_path = os.path.join(os.path.dirname(self.user_defined_config_path), plugin)
+                        self.console(f"Could not load plugin '{plugin}'. Attempting to load from the config file's directory...")
                         load_by_spec(formatted_path)
                     except:
                         try:
-                            # Attempts to load from the system path. 
+                            # Attempts to load from the system path.
+                            self.console(f"Could not load plugin '{plugin}'. Attempting to load from the system path...")
                             plugin = self.apply_filter("plugin_path_before_loading", plugin)
                             loaded_plugin = __import__(plugin)
                         except:
                             try:
                                 # Attempt to load from the built in plugins directory
                                 # Created with help from https://stackoverflow.com/a/6677505/6186333
+                                self.console(f"Could not load plugin '{plugin}'. Attempting to load from the GraphicDocs plugin directory...")
                                 plugin = self.apply_filter("plugin_path_before_loading", plugin)
                                 loaded_plugin = getattr(__import__(plugins.__package__, fromlist=[plugin]), plugin)
                             except:
                                 # Plugin didn't exist
+                                self.console(f"Could not load plugin '{plugin}'.")
                                 self.do_action('plugin_not_found')
 
             # Once the plugin was resolved try to load it
             try:
+                self.console(f"Successfully loaded. Running the plugin's {FormatForConsole('load()', ConsoleColorCodes.PYTHON)} method...")
                 loaded_plugin.load(self)
                 self.do_action('plugin_loaded')
             except:
                 self.do_action('error_loading_plugin')
 
         self.do_action('all_plugins_loaded')
+        self.console("All plugins are loaded.")
 
     def do_action(self, action_name: str, args: dict = {}) -> None:
         """ Executes all actions with the provided name in order of priority.
@@ -253,8 +320,10 @@ class Core():
         """
         if action_name not in self.actions._registered:
             if self.config["verbose"]:
-                print(f"Action hook '{action_name}' not found.")
+                self.console(f"Action hook '{action_name}' not found.")
             return
+
+        self.console(f"Executing action hook {FormatForConsole(action_name, ConsoleColorCodes.ACTION)}.")
 
         for priority in sorted(self.actions._registered[action_name]):
             # Actions must be carried out in priority order. Cannot rely on a dict structure to self-sort.
@@ -289,7 +358,7 @@ class Core():
 
         if filter_name not in self.filters._registered:
             if self.config["verbose"]:
-                print(f"Filter hook '{filter_name}' not found.")
+                self.console(f"Filter hook '{filter_name}' not found.")
         else:
             for priority in sorted(self.filters._registered[filter_name]):
                 for filter in self.filters._registered[filter_name][priority]:
@@ -299,6 +368,9 @@ class Core():
                     self.filters.doing["priority"] = priority
                     filter_input = filter(filter_input)
 
+        self.console(f"Applying filter {FormatForConsole(filter_name, ConsoleColorCodes.FILTER)}.")
+        self.console(f"    Input:  '{filter_input}'")
+        self.console(f"    Output: '{filter_input}'")
         return filter_input
 
 class Hooks():
