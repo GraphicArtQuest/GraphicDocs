@@ -7,7 +7,7 @@ import uuid
 
 from src.core import Core
 
-class TestCoreHooks(unittest.TestCase):
+class TestCorePlugins(unittest.TestCase):
 
     def new_temp_config_path(self, base_directory: str=os.path.dirname(__file__)) -> str:
         """Creates an empty config file in the same directory as this test script"""

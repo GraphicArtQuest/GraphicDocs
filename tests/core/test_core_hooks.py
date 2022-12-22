@@ -542,8 +542,8 @@ class TestCoreHooks(unittest.TestCase):
         # Return is a different format than input
         self.assertEqual("Hi there", core.apply_filter("test_filter_2", {"first": "Hi ", "second": "there"}))
         
-        # Should do nothing because filter hook does not exist
-        self.assertEqual(None, core.apply_filter("FILTER_DOES_NOT_EXIST", 1))
+        # Should do nothing because filter hook does not exist. Return the unmodified input.
+        self.assertEqual(1, core.apply_filter("FILTER_DOES_NOT_EXIST", 1))
 
         # Verify filters apply sequentially and in proper order
         self.assertEqual("QXXQXA", core.apply_filter("priority_test", "A"))
