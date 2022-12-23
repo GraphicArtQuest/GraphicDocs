@@ -45,8 +45,6 @@ class TestCorePlugins(unittest.TestCase):
         tempfile.close()
 
         core = Core(self.config_file_path)
-
-        sys.path.pop()  # Cleanup by removing the path we just added
         
         self.assertTrue(core.config["SomeTestKey"]) # Verify the plugin added the test key to the core config
 
@@ -61,8 +59,6 @@ class TestCorePlugins(unittest.TestCase):
         tempfile.close()
 
         core = Core(self.config_file_path)
-
-        sys.path.pop()  # Cleanup by removing the path we just added
         
         self.assertTrue(core.config["SomeTestKey"]) # Verify the plugin added the test key to the core config
         self.assertEqual(12345, core.config["SomeTestKey2"]) # Verify the plugin added the test key to the core config
