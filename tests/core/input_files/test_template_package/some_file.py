@@ -1,0 +1,1 @@
+test_value = "Test"   # Used with the `unittest` module to check it loaded properly

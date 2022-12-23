@@ -10,6 +10,7 @@ import re
 import typing
 
 import src.plugins as plugins
+import src.templates as templates
 
 initial_default_settings = {
     "console_colors": True,             # Set to False to remove colored output from
@@ -18,7 +19,7 @@ initial_default_settings = {
     "plugins": [],                      # Ordered list of plugin names to use. Will resolve to absolute file paths.
     "source": [],                       # A list of modules, functions, classes, or absolute/relative paths to source files.
     "source_exclude_pattern": [],       # A regex pattern to exclude matching subfiles during parsing
-    "template": os.path.join(os.getcwd(), "graphic_md"),  # Defaults to the Graphic Markdown template folder in the GraphicDocs source
+    "template": "",                     # Defaults to the Graphic Markdown template folder in the GraphicDocs source
     "verbose": True                     # If False, will not output console status messages
 }
 
@@ -68,6 +69,9 @@ class Core():
         self._register_core_hooks()
         self._load_plugins()
         self.do_action("init")
+        self.template = None
+        self._load_template()
+        self.do_action("core_loaded")
         self.console(FormatForConsole("GraphicDocs Core object initialized successfully.", ConsoleColorCodes.CONTROL))
 
     @staticmethod
@@ -224,8 +228,14 @@ class Core():
         self.actions.add("no_plugins_listed", core_action_hook, 0)
         self.actions.add("all_plugins_loaded", core_action_hook, 0)
         self.actions.add("init", core_action_hook, 0)
+        self.actions.add("error_loading_template", core_action_hook, 0)
+        self.actions.add("template_not_found", core_action_hook, 0)
+        self.actions.add("no_template_specified", core_action_hook, 0)
+        self.actions.add("finished_loading_template", core_action_hook, 0)
+        self.actions.add("core_loaded", core_action_hook, 0)
 
         self.filters.add("read_next_plugin", core_filter_hook, 0)
+        self.filters.add("get_template_path_from_config", core_filter_hook, 0)
 
     def load_python_module(self, path_to_module: str) -> callable:
         """ Loads a python module into memory. If not provided an absolute file path, it will traverse through a
@@ -254,7 +264,7 @@ class Core():
                 # Allow providing plugin modules without the .py extension
                 input_path = input_path + ".py"
 
-            spec = importlib.util.spec_from_file_location("the_plugin", input_path)
+            spec = importlib.util.spec_from_file_location("the_module", input_path)
             loaded_file = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(loaded_file)
             return loaded_file
@@ -286,7 +296,7 @@ class Core():
         return loaded_module
 
     def _load_plugins(self) -> None:
-        """ Loads all plugins from the config file. 
+        """ Loads all plugins from the config file.
             
             This is the first location while initializing where actions/filters get executed because this is the first
             location a user can tap in their code to access them.
@@ -317,18 +327,81 @@ class Core():
                     self.do_action('plugin_not_found', {'not_found_plugin': plugin})
                     break
 
-            # Once the plugin was resolved try to load it
+            # Once the plugin is resolved try to load it
             try:
                 self.console(f"Successfully loaded. Running the plugin's {FormatForConsole('load()', ConsoleColorCodes.PYTHON)} method...")
                 loaded_plugin.load(self)
                 plugins_loaded += 1
-                self.do_action('plugin_loaded', {'loaded_plugin': plugin})
+                self.do_action('plugin_loaded', {'loaded_plugin': loaded_plugin})
             except:
-                self.do_action('error_loading_plugin', {'plugin_causing_error': plugin})
+                self.do_action('error_loading_plugin', {'plugin_causing_error': loaded_plugin})
 
         else:
             self.do_action('no_plugins_listed')
         self.do_action('all_plugins_loaded', {'attempted': plugins_attempted, "succesful": plugins_loaded})
+
+    def _load_template(self) -> None:
+        """ Loads a reference to the template from the path specified in the config file.
+            
+            If it can't find the template in the precedence hierarchy using the `load_python_module` function, then it
+            searches in the GraphicDocs built-in template directory. If it doesn't find a valid template there, it will
+            use the default Markdown template.
+            @see Core.load_python_module
+        """
+        def verify_template_validity(template_reference: callable) -> bool:
+            """ A helper function to check that the template has a `build` method.
+                @param template_reference A reference to the template in memory
+                @returns True if the template has the `build` method. Otherwise, runs the `error_loading_template`
+                action hook and Returns False.
+            """
+            self.console(f"Successfully loaded. Checking for the template's {FormatForConsole('build()', ConsoleColorCodes.PYTHON)} method...")
+            try:
+                getattr(template_reference, "build")
+                return True
+            except Exception as err:
+                self.do_action('error_loading_template', {'template_causing_error': template_reference, "exception": err})
+                return False
+
+        self.console("Loading template...")
+
+        template = self.apply_filter("get_template_path_from_config", self.config["template"])
+        loaded_template = None
+        use_default_template = False
+        if template:
+            # User specified a template, try to load it
+            loaded_template = self.load_python_module(template)
+
+            # If the template wasn't found, try a last attempt at loading it from the built-in template directory
+            if loaded_template is None:
+                try:
+                    # Attempt to load from the built in template directory
+                    # Created with help from https://stackoverflow.com/a/6677505/6186333
+                    self.console(f"Could not load '{template}'. Attempting to load from the GraphicDocs template directory...")
+                    loaded_template = getattr(__import__(templates.__package__, fromlist=[template]), template)
+                except:
+                    # Template didn't exist
+                    self.console(f"Template '{template}' was not found.")
+                    self.do_action('template_not_found', {'not_found_template': template})
+                    use_default_template = True
+        else:
+            # If the user did not specify a template, then default to the Markdown template in the templates directory
+            self.do_action('no_template_specified')
+            use_default_template = True
+
+        # Once the template is resolved, make sure it has an appropriate build method
+        if loaded_template and verify_template_validity(loaded_template):
+            self.template = loaded_template
+        else:
+            use_default_template = True
+
+        if use_default_template:
+            self.console("Using the default Markdown template...")
+            default_template = os.path.join(os.path.dirname(__file__), "templates", "graphic_md")
+            loaded_template = self.load_python_module(default_template)
+            if verify_template_validity(loaded_template):
+                self.template = loaded_template
+
+        self.do_action('finished_loading_template', {'template': self.template})
 
     def do_action(self, action_name: str, args: dict = {}) -> None:
         """ Executes all actions with the provided name in order of priority.
@@ -369,6 +442,8 @@ class Core():
                     action(args)
                 else:
                     action()
+
+        self.actions.done.append(action_name)
 
     def apply_filter(self, filter_name: str, filter_input: any) -> any:
         """ Applies all filters with the provided name to the provided input sequentially and in order of priority.
@@ -412,13 +487,15 @@ class Core():
 
         self.console(f"    {FormatForConsole('Input: ', ConsoleColorCodes.PYTHON)} {print_input}")
         self.console(f"    {FormatForConsole('Output:', ConsoleColorCodes.PYTHON)} {print_output}")
+
+        self.filters.done.append(filter_name)
         return filter_output
 
 class Hooks():
     def __init__(self) -> None:
         self._registered: dict[dict[list[int]]] = {}
         self.doing: dict = {"hook_name": None, "callback": None, "priority": None}
-        self.done: list|None = None
+        self.done: list|None = []
 
     def add(self, hook_name: str, callback: typing.Callable, priority: int = 10) -> True:
         """ Register a new hook.

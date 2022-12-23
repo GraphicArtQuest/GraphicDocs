@@ -119,9 +119,8 @@ graph TD
         template_dirD[Search for Template in GraphicDocs Directory]
         error_loading_template:::action
         template_not_found[template_not_found]:::action
-        template_loaded[template_loaded]:::action
         usedefaulttemplate[Use Default Template]
-        finished_loading_templates:::action
+        finished_loading_template:::action
 
         loadtemplate --> get_template_path_from_config
         get_template_path_from_config --> |custom path specified|templateabsolutepath
@@ -136,17 +135,16 @@ graph TD
         template_dirD --> |not found|template_not_found
         template_dirD --> |found|load_template
 
-        load_template --> |success|template_loaded
+        load_template --> |success|finished_loading_template
         load_template --> |error|error_loading_template
-        template_loaded --> finished_loading_templates
         error_loading_template --> usedefaulttemplate
         template_not_found --> |no|usedefaulttemplate
         get_template_path_from_config --> |no path specified|no_template_specified:::action
         no_template_specified --> usedefaulttemplate
-        usedefaulttemplate --> finished_loading_templates
+        usedefaulttemplate --> finished_loading_template
     end
 
-    finished_loading_templates --> core_loaded:::action
+    finished_loading_template --> core_loaded:::action
     core_loaded --> parsepython
 
     subgraph parseCode [ ]
