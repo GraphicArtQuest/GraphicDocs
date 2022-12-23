@@ -191,17 +191,24 @@ class Core():
                         self.config[key] = user_config_data[key]
                         action = "Added new"
 
+                    if isinstance(user_config_data[key], str):
+                        formated_data_output = f"'{self.config[key]}'"
+                    else:
+                        formated_data_output = self.config[key]
+
                     self.console(f"{action} key '{key}' in the core configuration.")
+                    self.console(f"    {FormatForConsole('New key value:', ConsoleColorCodes.PYTHON)} {formated_data_output}")
 
                 user_config_file.close()
         except:
             # Trying to open a config file that doesn't exist will throw an error. Just use the default config values.
-            self.console("No valid configuration file found. Continuing with default settings...")
+            self.console("The configuration file was invalid. Continuing with default settings...")
 
     def _register_core_hooks(self) -> None:
         """ Registers a series of action hooks and filters that the core class uses.
         
             These are loaded with a dummy function as priority 0 so they are the first to execute when the core fires.
+            This prevents the core from throwing a "not found" message for hooks that should exist.
         """
         self.console("Registering core hooks...")
 
@@ -214,91 +221,114 @@ class Core():
         self.actions.add("plugin_not_found", core_action_hook, 0)
         self.actions.add("error_loading_plugin", core_action_hook, 0)
         self.actions.add("plugin_loaded", core_action_hook, 0)
+        self.actions.add("no_plugins_listed", core_action_hook, 0)
         self.actions.add("all_plugins_loaded", core_action_hook, 0)
         self.actions.add("init", core_action_hook, 0)
 
         self.filters.add("read_next_plugin", core_filter_hook, 0)
-        self.filters.add("plugin_path_before_loading", core_filter_hook, 0)
 
-    def _load_plugins(self) -> None:
-        """ Loads all plugins from the config file. If not provided an absolute file path, it will traverse through a
+    def load_python_module(self, path_to_module: str) -> callable:
+        """ Loads a python module into memory. If not provided an absolute file path, it will traverse through a
             series of possible directories to try to resolve it using the following priorities:
 
-            1. The working directory where the main script was run from
+            1. In or relative to the working directory where the main script was run from
             2. The config file directory
-            3. The system path (e.g. you build and install plugins as packages using PIP)
-            4. The GraphicDocs built-in plugin directory
-            
-            This is the first location while initializing where actions/filters get executed because this is the first
-            location a user can tap in their code to access them.
+            3. The system path (e.g. you build and install callable modules as packages using PIP)
+
+            @param path_to_module An absolute or relative path to the module
+            @returns A loaded reference to the module
         """
-        self.console("Loading plugins...")
+
+        loaded_module = None
 
         def load_by_spec(input_path: str) -> None:
-            """ Tries to load a plugin from spec based on the file location.
-                @param input_path An absolute or relative path to the plugin 
+            """ Helper function that tries to load a python module from spec based on the file location.
+                @param input_path An absolute or relative path to the module
             """
-            nonlocal loaded_plugin
-            input_path = self.apply_filter("plugin_path_before_loading", input_path)
+
+            nonlocal loaded_module
             if os.path.isdir(input_path):
                 # Convert a package path into the module that initializes it
-                input_path = os.path.join(formatted_path, "__init__.py")
-            elif os.path.exists(input_path + ".py"):
+                input_path = os.path.join(input_path, "__init__.py")
+            elif os.path.exists(f"{input_path}.py"):
                 # Allow providing plugin modules without the .py extension
                 input_path = input_path + ".py"
 
             spec = importlib.util.spec_from_file_location("the_plugin", input_path)
-            loaded_plugin = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(loaded_plugin)
-        
-        for plugin in self.config["plugins"]:
-            plugin = self.apply_filter("read_next_plugin", plugin)
-            loaded_plugin = None
+            loaded_file = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(loaded_file)
+            return loaded_file
+
+        try:
+            # Attempt to load from absolute path. If not an absolute path, it will try to load from a relative path
+            #   to the current working directory using the "./" or "../" indicators.
+            self.console(f"Attempting to load '{path_to_module}' from absolute path...")
+            loaded_module = load_by_spec(path_to_module)
+        except:
             try:
-                # Attempt to load from absolute path. If not an absolute path, it will try to load from a relative path
-                #   to the current working directory using the "./" or "../" indicators.
-                self.console(f"Attempting to load plugin '{plugin}' from absolute path...")
-                load_by_spec(plugin)
+                # Attempts to load from working directory.
+                formatted_path = os.path.join(os.getcwd(), path_to_module)
+                self.console(f"Could not load '{path_to_module}'. Attempting to load from working directory...")
+                loaded_module = load_by_spec(formatted_path)
             except:
                 try:
-                    # Attempts to load from working directory.
-                    formatted_path = os.path.join(os.getcwd(), plugin)
-                    self.console(f"Could not load plugin '{plugin}'. Attempting to load from working directory...")
-                    load_by_spec(formatted_path)
+                    # Attempt to load from the config file directory
+                    formatted_path = os.path.join(os.path.dirname(self.user_defined_config_path), path_to_module)
+                    self.console(f"Could not load '{path_to_module}'. Attempting to load from the config file's directory...")
+                    loaded_module = load_by_spec(formatted_path)
                 except:
                     try:
-                        # Attempt to load from the config file directory
-                        formatted_path = os.path.join(os.path.dirname(self.user_defined_config_path), plugin)
-                        self.console(f"Could not load plugin '{plugin}'. Attempting to load from the config file's directory...")
-                        load_by_spec(formatted_path)
+                        # Attempts to load from the system path.
+                        self.console(f"Could not load '{path_to_module}'. Attempting to load from the system path...")
+                        loaded_module = __import__(path_to_module)
                     except:
-                        try:
-                            # Attempts to load from the system path.
-                            self.console(f"Could not load plugin '{plugin}'. Attempting to load from the system path...")
-                            plugin = self.apply_filter("plugin_path_before_loading", plugin)
-                            loaded_plugin = __import__(plugin)
-                        except:
-                            try:
-                                # Attempt to load from the built in plugins directory
-                                # Created with help from https://stackoverflow.com/a/6677505/6186333
-                                self.console(f"Could not load plugin '{plugin}'. Attempting to load from the GraphicDocs plugin directory...")
-                                plugin = self.apply_filter("plugin_path_before_loading", plugin)
-                                loaded_plugin = getattr(__import__(plugins.__package__, fromlist=[plugin]), plugin)
-                            except:
-                                # Plugin didn't exist
-                                self.console(f"Could not load plugin '{plugin}'.")
-                                self.do_action('plugin_not_found')
+                        pass
+        return loaded_module
+
+    def _load_plugins(self) -> None:
+        """ Loads all plugins from the config file. 
+            
+            This is the first location while initializing where actions/filters get executed because this is the first
+            location a user can tap in their code to access them.
+            
+            If it can't find the plugin in the precedence hierarchy using the `load_python_module` function, then it
+            searches in the GraphicDocs built-in plugin directory.
+            @see Core.load_python_module
+        """
+        self.console("Loading plugins...")
+
+        plugins_attempted = 0
+        plugins_loaded = 0
+        for plugin in self.config["plugins"]:
+            plugins_attempted += 1
+            plugin = self.apply_filter("read_next_plugin", plugin)
+            loaded_plugin = self.load_python_module(plugin)
+
+            # If the plugin wasn't found, try a last attempt at loading it from the built-in plugins directory
+            if loaded_plugin is None:
+                try:
+                    # Attempt to load from the built in plugins directory
+                    # Created with help from https://stackoverflow.com/a/6677505/6186333
+                    self.console(f"Could not load '{plugin}'. Attempting to load from the GraphicDocs plugin directory...")
+                    loaded_plugin = getattr(__import__(plugins.__package__, fromlist=[plugin]), plugin)
+                except:
+                    # Plugin didn't exist
+                    self.console(f"Plugin '{plugin}' was not found.")
+                    self.do_action('plugin_not_found', {'not_found_plugin': plugin})
+                    break
 
             # Once the plugin was resolved try to load it
             try:
                 self.console(f"Successfully loaded. Running the plugin's {FormatForConsole('load()', ConsoleColorCodes.PYTHON)} method...")
                 loaded_plugin.load(self)
-                self.do_action('plugin_loaded')
+                plugins_loaded += 1
+                self.do_action('plugin_loaded', {'loaded_plugin': plugin})
             except:
-                self.do_action('error_loading_plugin')
+                self.do_action('error_loading_plugin', {'plugin_causing_error': plugin})
 
-        self.do_action('all_plugins_loaded')
-        self.console("All plugins are loaded.")
+        else:
+            self.do_action('no_plugins_listed')
+        self.do_action('all_plugins_loaded', {'attempted': plugins_attempted, "succesful": plugins_loaded})
 
     def do_action(self, action_name: str, args: dict = {}) -> None:
         """ Executes all actions with the provided name in order of priority.
@@ -324,6 +354,8 @@ class Core():
             return
 
         self.console(f"Executing action hook {FormatForConsole(action_name, ConsoleColorCodes.ACTION)}.")
+        if args:
+            self.console(f"    {FormatForConsole('Hook Arguments:', ConsoleColorCodes.PYTHON)} {args}.")
 
         for priority in sorted(self.actions._registered[action_name]):
             # Actions must be carried out in priority order. Cannot rely on a dict structure to self-sort.
@@ -355,7 +387,7 @@ class Core():
             
             final_val = core.apply_filter("test_filters", 2) # Returns 16
         """
-
+        filter_output = deepcopy(filter_input)
         if filter_name not in self.filters._registered:
             if self.config["verbose"]:
                 self.console(f"Filter hook '{filter_name}' not found.")
@@ -366,12 +398,21 @@ class Core():
                     self.filters.doing["hook_name"] = filter_name
                     self.filters.doing["callback"] = filter
                     self.filters.doing["priority"] = priority
-                    filter_input = filter(filter_input)
+                    filter_output = filter(filter_output)
 
         self.console(f"Applying filter {FormatForConsole(filter_name, ConsoleColorCodes.FILTER)}.")
-        self.console(f"    Input:  '{filter_input}'")
-        self.console(f"    Output: '{filter_input}'")
-        return filter_input
+
+        print_input = deepcopy(filter_input)
+        print_output = deepcopy(filter_output)
+
+        if isinstance(filter_input, str):
+            print_input = f"'{print_input}'"
+        if isinstance(filter_output, str):
+            print_output = f"'{print_output}'"
+
+        self.console(f"    {FormatForConsole('Input: ', ConsoleColorCodes.PYTHON)} {print_input}")
+        self.console(f"    {FormatForConsole('Output:', ConsoleColorCodes.PYTHON)} {print_output}")
+        return filter_output
 
 class Hooks():
     def __init__(self) -> None:

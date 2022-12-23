@@ -72,31 +72,31 @@ graph TD
         loadpluginlist[Load Plugins from Config]
         read_next_plugin[/read_next_plugin/]:::filter
         pluginabsolutepath{Absolute Path?}
-        all_plugins_loaded[all_plugins_loaded]:::action
+        no_plugins_listed:::action
+        all_plugins_loaded:::action
         plugin_dirA[Search for Plugin in Working Directory]
         plugin_dirB[Search for Plugin in Config Directory]
         plugin_dirC[Search for Plugin in System Path]
         plugin_dirD[Search for Plugin in GraphicDocs Plugin Directory]
-        plugin_path_before_loading[plugin_path_before_loading]:::filter
         load_plugin[Load Plugin]
         plugin_not_found[plugin_not_found]:::action
         error_loading_plugin[error_loading_plugin]:::action
         moreplugins{More Plugins?}
 
         loadpluginlist --> |plugins requested in config|read_next_plugin
-        loadpluginlist --> |no plugins listed|all_plugins_loaded
+        loadpluginlist --> |no plugins listed|no_plugins_listed --> all_plugins_loaded
+
         read_next_plugin --> pluginabsolutepath
-        pluginabsolutepath --> |yes|plugin_path_before_loading
+        pluginabsolutepath --> |yes|load_plugin
         pluginabsolutepath --> |no|plugin_dirA
         plugin_dirA --> |not found|plugin_dirB
-        plugin_dirA --> |found|plugin_path_before_loading
+        plugin_dirA --> |found|load_plugin
         plugin_dirB --> |not found|plugin_dirC
-        plugin_dirB --> |found|plugin_path_before_loading
+        plugin_dirB --> |found|load_plugin
         plugin_dirC --> |not found|plugin_dirD
-        plugin_dirC --> |found|plugin_path_before_loading
+        plugin_dirC --> |found|load_plugin
         plugin_dirD --> |not found|plugin_not_found
-        plugin_dirD --> |found|plugin_path_before_loading
-        plugin_path_before_loading --> load_plugin
+        plugin_dirD --> |found|load_plugin
         load_plugin --> |success| plugin_loaded:::action --> moreplugins
         load_plugin --> |fail|error_loading_plugin --> moreplugins
         plugin_not_found --> moreplugins
@@ -112,32 +112,30 @@ graph TD
         loadtemplate[Load Template]
         get_template_path_from_config[/get_template_path_from_config/]:::filter
         templateabsolutepath{Absolute Path?}
-        template_path_before_loading[/template_path_before_loading/]:::filter
         load_template[Load Template as Reference]
         template_dirA[Search for Template in Working Directory]
         template_dirB[Search for Template in Config Directory]
         template_dirC[Search for Template in System Path]
         template_dirD[Search for Template in GraphicDocs Directory]
-        error_loading_template[error_loading_template]:::action
+        error_loading_template:::action
         template_not_found[template_not_found]:::action
         template_loaded[template_loaded]:::action
         usedefaulttemplate[Use Default Template]
-        finished_loading_templates[finished_loading_templates]:::action
+        finished_loading_templates:::action
 
         loadtemplate --> get_template_path_from_config
         get_template_path_from_config --> |custom path specified|templateabsolutepath
-        templateabsolutepath --> |yes|template_path_before_loading
+        templateabsolutepath --> |yes|load_template
         templateabsolutepath --> |no|template_dirA
         template_dirA --> |not found|template_dirB
-        template_dirA --> |found|template_path_before_loading
+        template_dirA --> |found|load_template
         template_dirB --> |not found|template_dirC
-        template_dirB --> |found|template_path_before_loading
+        template_dirB --> |found|load_template
         template_dirC --> |not found|template_dirD
-        template_dirC --> |found|template_path_before_loading
+        template_dirC --> |found|load_template
         template_dirD --> |not found|template_not_found
-        template_dirD --> |found|template_path_before_loading
+        template_dirD --> |found|load_template
 
-        template_path_before_loading --> load_template
         load_template --> |success|template_loaded
         load_template --> |error|error_loading_template
         template_loaded --> finished_loading_templates
