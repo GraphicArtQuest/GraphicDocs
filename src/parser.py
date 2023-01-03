@@ -256,8 +256,18 @@ def parse_class(class_ref) -> dict:
         parent_class = inspect.getmro(class_ref)[1].__name__
 
     # LINE NUMBERS
-    linestart = inspect.findsource(class_ref)[1] + 1, # This is zero indexed, but we read line numbers starting at 1
-    num_code_lines = inspect.getsource(class_ref).count("\n")  # total number of code as separated by a new line
+    try:
+        linestart = inspect.findsource(class_ref)[1] + 1, # This is zero indexed, but we read line numbers starting at 1
+        num_code_lines = inspect.getsource(class_ref).count("\n")  # total number of code as separated by a new line
+    except:
+        linestart = [1]
+        num_code_lines = 1
+    
+    try:
+        # In some obscure cases this was causing errors I could not track down why. Make sure it doesn't interrupt.
+        source_file = inspect.getsourcefile(class_ref)
+    except:
+        source_file = None
 
     return {
         "annotations": class_annotations,
@@ -268,7 +278,7 @@ def parse_class(class_ref) -> dict:
         "name": class_ref.__name__,
         "parent": parent_class,
         "properties": class_properties,
-        "sourcefile": inspect.getsourcefile(class_ref),
+        "sourcefile": source_file,
         "subclasses": class_subclasses
         }
 
