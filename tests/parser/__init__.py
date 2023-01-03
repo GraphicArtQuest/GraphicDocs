@@ -24,4 +24,3 @@ from .test_parse_function import TestParseFunction
 from .test_parse_class import TestParseClass
 
 from .test_parse_module import TestParseModule
-

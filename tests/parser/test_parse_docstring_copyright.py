@@ -1,7 +1,7 @@
 from copy import deepcopy
 import unittest
 
-from .input_files.blank_defaults import blank_parse_docstring_return
+from tests.parser.input_files.blank_defaults import blank_parse_docstring_return
 from src.parser import parse_docstring
 
 class TestParseDocstring_Copyright(unittest.TestCase):

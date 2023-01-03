@@ -3,10 +3,10 @@ import os
 import unittest
 
 from src.parser import parse_module
-from .input_files.blank_defaults import blank_parse_docstring_return, blank_parse_class_return, blank_parse_module_return, blank_parsed_function_return
-from .input_files import testmodule
-from .input_files import testmodule_only_docstring
-from .input_files import testmodule_with_imports
+from tests.parser.input_files.blank_defaults import blank_parse_docstring_return, blank_parse_class_return, blank_parse_module_return, blank_parsed_function_return
+from tests.parser.input_files import testmodule
+from tests.parser.input_files import testmodule_only_docstring
+from tests.parser.input_files import testmodule_with_imports
 
 class TestParseModule(unittest.TestCase):
 
