@@ -1,3 +1,4 @@
+from enum import Enum
 import inspect
 import os
 
@@ -153,7 +154,7 @@ def parse_class(class_ref) -> dict:
             properties: List of dictionaries for all class properties as [docstring: `dict`, name: `str`, readable: `bool`, writeable: `bool`]
         }
     """
-    if not inspect.isclass(class_ref):
+    if not inspect.isclass(class_ref) or issubclass(class_ref, Enum):
         return
 
     # DOCSTRING
