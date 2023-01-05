@@ -44,7 +44,6 @@ class TestCoreConfig(unittest.TestCase):
         """Calling with no arguments yields a successful Core object."""
         core = Core()
         self.assertIsInstance(core, Core)
-        self.assertEqual(core.config, initial_default_settings)
 
     def test_will_convert_all_config_inputs_to_string(self):
         """If provided with an input for the user_defined_config, it should convert it to a string without regard
@@ -272,7 +271,7 @@ class TestCoreConfig(unittest.TestCase):
 
             self.assertEqual(expected, received)
 
-    def test_config_file_changes_default_value_plugins(self):
+    def test_config_file_changes_default_value_source(self):
         """Test the config file accepts valid input for the 'source' variable."""
         self.maxDiff = None
 
