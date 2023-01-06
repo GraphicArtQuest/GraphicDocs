@@ -553,8 +553,8 @@ class Core():
             self.template.build(self)
             self.do_action("all_doc_generation_complete")
             self.console(FormatForConsole("Documentation built successfully.", ConsoleColorCodes.CONTROL))
-        except:
-            self.do_action("error_building_documentation")
+        except Exception as err:
+            self.do_action("error_building_documentation", {"error": err})
             self.console(FormatForConsole("Documentation failed to build.", ConsoleColorCodes.CONTROL))
 
     def do_action(self, action_name: str, args: dict = {}) -> None:
