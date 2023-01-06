@@ -367,42 +367,45 @@ class TestCoreTemplate(unittest.TestCase):
     def test_build_successful(self):
         """Make sure that the appropriate hooks fire when successfully building. Uses a dummy template."""
 
-        temp_id = str(uuid.uuid1())
-
-        temp_path = os.path.join(os.getcwd(), temp_id)
-        os.makedirs(temp_path)
-
         config = {
-            "template": "./tests/core/input_files/test_template",
-            "destination": temp_id
+            "source": ["./tests/core"],
+            "template": "./tests/core/input_files/test_template"
         }
 
         core = Core(config)
         core.build()
-
-        shutil.rmtree(temp_path) # Cleanup
 
         self.assertTrue('build_with_template' in core.actions.done)
         self.assertTrue('error_building_documentation' not in core.actions.done)
         self.assertTrue('all_doc_generation_complete' in core.actions.done)
 
-    def test_build_failed(self):
-        """Make sure that the appropriate hooks fire when successfully building. Uses a dummy template."""
-
-        temp_id = str(uuid.uuid1())
-
-        temp_path = os.path.join(os.getcwd(), temp_id)
-        os.makedirs(temp_path)
+    def test_build_generate_error_when_no_parsed_source_provided(self):
+        """Should raise an exception if trying to build and nothing is there to build."""
 
         config = {
-            "template": "./tests/core/input_files/test_template_cause_error",
-            "destination": temp_id
+            "source": [],
+            "template": "./tests/core/input_files/test_template"
         }
 
         core = Core(config)
         core.build()
 
-        shutil.rmtree(temp_path) # Cleanup
+        self.assertTrue('build_with_template' in core.actions.done)
+        self.assertTrue('no_parsed_modules_found' in core.actions.done)
+        self.assertTrue('error_building_documentation' in core.actions.done)
+        self.assertTrue('all_doc_generation_complete' not in core.actions.done)
+
+    def test_build_failed(self):
+        """Make sure that the appropriate hooks fire when successfully building. Uses a dummy template."""
+
+        config = {
+            "source": ["./tests/core"],
+            "template": "./tests/core/input_files/test_template_cause_error"
+        }
+
+        core = Core(config)
+        core.build()
+
 
         self.assertTrue('build_with_template' in core.actions.done)
         self.assertTrue('error_building_documentation' in core.actions.done)

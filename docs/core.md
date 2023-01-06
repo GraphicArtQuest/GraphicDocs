@@ -204,7 +204,10 @@ graph TD
     classDef filter fill:blue,color:white;
 
     BUILD([BUILD]) --> build_with_template:::action
-    build_with_template --> template_build[Call Template Build Method]
+    build_with_template --> parsed_source_exists{Parsed Source?}
+
+    parsed_source_exists --> |yes| template_build[Call Template Build Method]
+    parsed_source_exists --> |no| no_parsed_modules_found:::action --> error_building_documentation
 
     template_build --> |success|all_doc_generation_complete:::action --> END
     template_build --> |exception raised|error_building_documentation:::action --> END

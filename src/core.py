@@ -279,11 +279,9 @@ class Core():
 
         # Building
         self.actions.add("build_with_template", core_action_hook, 0)
+        self.actions.add("no_parsed_modules_found", core_action_hook, 0)
         self.actions.add("all_doc_generation_complete", core_action_hook, 0)
         self.actions.add("error_building_documentation", core_action_hook, 0)
-
-        # BUILT-IN TEMPLATE HOOKS - By registering these here, other end users can tap in to these hooks through plugins.
-        # templates.graphic_md.register_hooks(self) #TODO: Reserved for future implementation
 
     def load_python_module(self, path_to_module: str) -> callable:
         """ Loads a python module into memory. If not provided an absolute file path, it will traverse through a
@@ -550,6 +548,10 @@ class Core():
         self.do_action("build_with_template")
 
         try:
+            if not self.parsed_results:
+                self.do_action("no_parsed_modules_found")
+                raise(Exception)
+
             self.template.build(self)
             self.do_action("all_doc_generation_complete")
             self.console(FormatForConsole("Documentation built successfully.", ConsoleColorCodes.CONTROL))
