@@ -604,6 +604,9 @@ class Core():
                     action()
 
         self.actions.done.append(action_name)
+        self.actions.doing["hook_name"] = None
+        self.actions.doing["callback"] = None
+        self.actions.doing["priority"] = None
 
     def apply_filter(self, filter_name: str, filter_input: any) -> any:
         """ Applies all filters with the provided name to the provided input sequentially and in order of priority.
@@ -645,10 +648,17 @@ class Core():
         if isinstance(filter_output, str):
             print_output = f"'{print_output}'"
 
-        self.console(f"    {FormatForConsole('Input: ', ConsoleColorCodes.PYTHON)} {print_input}")
-        self.console(f"    {FormatForConsole('Output:', ConsoleColorCodes.PYTHON)} {print_output}")
+        if print_input == print_output:
+            self.console(f"    {FormatForConsole('Input/Output: ', ConsoleColorCodes.PYTHON)} {print_input}")
+        else:
+            self.console(f"    {FormatForConsole('Input: ', ConsoleColorCodes.PYTHON)} {print_input}")
+            self.console(f"    {FormatForConsole('Output:', ConsoleColorCodes.PYTHON)} {print_output}")
 
         self.filters.done.append(filter_name)
+        self.filters.doing["hook_name"] = None
+        self.filters.doing["callback"] = None
+        self.filters.doing["priority"] = None
+
         return filter_output
 
 class Hooks():
