@@ -55,7 +55,6 @@ class TestCoreConfig(unittest.TestCase):
             3.14159,
             False,
             True,
-            {"a": "Some String"},
             ["A", "B", "C"],
             ["Some String"],
             ("A", "B", "C"),
@@ -513,6 +512,53 @@ class TestCoreConfig(unittest.TestCase):
 
             self.assertEqual(expected, received)
 
+    def test_config_file_changes_default_value_source_depth(self):
+        """Test the config file accepts valid input for the 'source_depth' variable."""
+        self.maxDiff = None
+
+        inputs = [
+            # Tuple of: [1] = Variable to JSON stringify, [2] = Expected absolute path string it gets back
+            ('', 0),
+            ('2', 2),
+            (2, 2),
+            (3.14159, 3),
+            (3.5, 3),
+            (3.999, 3),
+            ("abc", 0),
+            (False, 0),
+            (True, 1),
+            ({'a': 'Some String'}, 0),
+            (["A", "B", "C"], 0),
+            (['Some String'], 0),
+            (("A", "B", "C"), 0),
+            (None, 0),
+            ([], 0),
+            ((), 0),
+            ("0", 0),
+            (0, 0),
+
+            (str, 0),    # Class references
+            (unittest, 0),   # Module references
+            (Core._process_user_defined_config, 0),   # Function references,
+        ]
+
+        for input in inputs:
+            try:
+                config_text = json.dumps({"source_depth": input[0]})
+            except:
+                config_text = json.dumps({"source_depth": ""}) # Object refs can't serialize, so just use empty string
+
+            tempfile = open(self.config_file_path, "w+")
+            tempfile.write(config_text)
+            tempfile.close()
+
+            core = Core(self.config_file_path)
+
+            expected = input[1]
+            received = core.config["source_depth"]
+
+            self.assertEqual(expected, received)
+
 
     ###############################################################
     # Unrecognized Settings
@@ -549,3 +595,25 @@ class TestCoreConfig(unittest.TestCase):
             received = core.config[input[0]]
 
             self.assertEqual(expected, received)
+
+
+    ###############################################################
+    # Load Configs Directly From Dictionary
+    ###############################################################
+
+    def test_config_from_dict_instead_of_file(self):
+        """If passed a valid config dictionary object instead of a file path, it should still work."""
+        self.maxDiff = None
+
+        config = {
+            "console_colors": False,
+            "destination_overwrite": True,
+            "template": "",
+            "verbose": False,
+            "someTestKey": True
+        }
+
+        core = Core(config)
+
+        self.assertIsInstance(core, Core)
+        self.assertTrue(core.config["someTestKey"])

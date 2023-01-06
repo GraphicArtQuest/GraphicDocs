@@ -1,13 +1,25 @@
 # Core
 
-The `GraphicDocs` core engine is inspired by the WordPress system. It uses a series of hooks to execute actions and filters both while parsing code and generating readable documentation.
+The `GraphicDocs` core engine parses your code before building readable documentation. It has four main components:
 
-## Legend
+1. [**Initialization**](#initialization). When instantiating the `Core` class, it will initialize using the default configuration unless you provide it with your own config.
+
+2. [**Plugins**](#plugins). Allows you to tap in to the process at various stages.
+
+3. [**Templates**](#templates). The template is what takes the parsed information and tells the build script how to assemble it into an end product.
+
+4. [**Build**](#building-documentation). This step actually creates the documentation.
+
+----
+
+## Initialization
+
+This chart shows the core engine's logic process while generating documentation. Use it to help identify which filter or action your plugin needs to tie in to.
 
 ```mermaid
 graph TD
-    classDef action fill:red,color:white;
-    classDef filter fill:blue,color:white;
+    classDef action fill:red, color:white;
+    classDef filter fill:blue, color:white;
     subgraph Legend
         legendAction[Action]:::action
         legendFilter[/Filter/]:::filter
@@ -21,17 +33,6 @@ graph TD
 
 **Core Actions** are steps in the source code and cannot be modified with plugins or templates.
 
-## Plugins
-
-Using the filter and action hooks, you can create plugins to tie in to them and modify the core execution processes without editing the core code.
-
-## Templates
-
-The template gets run at the `build_with_template` action near the end. This takes the output object returned by `final_parsed_object` and builds the documentation files. By default, `GraphicDocs` will use the built in Markdown generating template.
-
-## Flow Chart
-
-This chart shows the core engine's logic process while generating documentation. Use it to help identify which filter or action your plugin needs to tie in to.
 
 
 ```mermaid
@@ -120,7 +121,6 @@ graph TD
         error_loading_template:::action
         template_not_found[template_not_found]:::action
         usedefaulttemplate[Use Default Template]
-        finished_loading_template:::action
 
         loadtemplate --> get_template_path_from_config
         get_template_path_from_config --> |custom path specified|templateabsolutepath
@@ -135,53 +135,63 @@ graph TD
         template_dirD --> |not found|template_not_found
         template_dirD --> |found|load_template
 
-        load_template --> |success|finished_loading_template
         load_template --> |error|error_loading_template
         error_loading_template --> usedefaulttemplate
         template_not_found --> |no|usedefaulttemplate
         get_template_path_from_config --> |no path specified|no_template_specified:::action
         no_template_specified --> usedefaulttemplate
-        usedefaulttemplate --> finished_loading_template
     end
+    
+    finished_loading_template:::action
+    load_template --> |success|finished_loading_template
+    usedefaulttemplate --> finished_loading_template
 
-    finished_loading_template --> core_loaded:::action
-    core_loaded --> parsepython
+    next_parsing_target[/next_parsing_target/]:::filter
+    moreparsingtargets{More Parsing Targets?}
 
-    subgraph parseCode [ ]
-        parsepython[Parse Python Code]
-        get_parsing_list[/get_parsing_list/]:::filter
-        next_parsing_target[/next_parsing_target/]:::filter
-        attempt_parse_pymodule:::action
-        attempt_parse_pyclass:::action
-        attempt_parse_pyfunction:::action
-        unable_to_parse:::action
-        parsing_complete:::action
-        moreparsingtargets{More Parsing Targets?}
-        final_parsed_object[/final_parsed_object/]:::filter
+    finished_loading_template --> parsepython[Check for Core Config Source Target]
 
-        after_parsing_result[/after_parsing_result/]:::filter
+    subgraph prepare [ ]
+        parsepython --> |at least one target specified|next_parsing_target
+        next_parsing_target --> attempt_load[Attempt to Load Module]
+        attempt_load --> |not module|unable_to_load_module:::action
+        attempt_load --> |success|parse[Parse Module]
 
-        parsepython --> get_parsing_list
-        get_parsing_list --> |no targets provided|no_parsing_targets_specified:::action
-        get_parsing_list --> |at least one target specified|next_parsing_target
-        next_parsing_target --> attempt_parse_pymodule
-        attempt_parse_pymodule --> |not module|attempt_parse_pyclass
-        attempt_parse_pymodule --> |success|after_parsing_result
-        attempt_parse_pyclass --> |not class|attempt_parse_pyfunction
-        attempt_parse_pyclass --> |success|after_parsing_result
-        attempt_parse_pyfunction --> |success|after_parsing_result
-        attempt_parse_pyfunction --> |fail|unable_to_parse
-        after_parsing_result --> moreparsingtargets
-        moreparsingtargets --> |no|parsing_complete
+        parse --> |success|parsed_module:::action --> moreparsingtargets
+        parse --> |unhandled exception|unable_to_parse:::action
+        moreparsingtargets --> |no|parsing_complete:::action
+        parsepython --> |no targets provided|no_parsing_targets_specified:::action
         moreparsingtargets --> |yes|next_parsing_target
-        no_parsing_targets_specified --> parsing_complete
-        unable_to_parse --> moreparsingtargets
-        parsing_complete --> final_parsed_object
-
     end
 
-    final_parsed_object --> core_initialized:::action --> INITIALIZED([INITIALIZED])
+    unable_to_load_module --> core_loaded:::action
+    unable_to_parse --> core_loaded
+    parsing_complete --> core_loaded
+    no_parsing_targets_specified --> core_loaded
 ```
+
+----
+
+## Plugins
+
+`GraphicDocs` takes inspiration from the WordPress system in that it uses a series of hooks to execute actions and filters both while parsing code and generating readable documentation. You can write your own plugin to tap in to the initialization and build sequences to provide you more customized control over the process without having to dive in to the inner core code workings.
+
+Using the filter and action hooks, you can create plugins to tie in to them and modify the core execution processes without editing the core code.
+
+- Filters take input data and return a modified form of it.
+- Actions can take arguments (but do not have to), and serve as milestones to run actions at various points.
+
+----
+
+## Templates
+
+The template gets run at the `build_with_template` action near the end. This takes the parsed output and builds the documentation files. By default, `GraphicDocs` will use the built in Markdown generating template.
+
+Available built-in templates:
+
+- `graphic_md` (_default_): A Markdown based template.
+
+----
 
 ## Building Documentation
 
@@ -194,10 +204,10 @@ graph TD
     classDef filter fill:blue,color:white;
 
     BUILD([BUILD]) --> build_with_template:::action
+    build_with_template --> template_build[Call Template Build Method]
 
-
-    build_with_template --> |success|all_doc_generation_complete:::action --> END
-    build_with_template --> |fail|error_building_documentation:::action --> END
+    template_build --> |success|all_doc_generation_complete:::action --> END
+    template_build --> |exception raised|error_building_documentation:::action --> END
 
     END([END])
 ```
