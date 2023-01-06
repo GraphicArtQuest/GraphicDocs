@@ -3,7 +3,7 @@ import unittest
 import pprint
 
 from src.core import Core
-from src.core import Hooks, HookException
+from src.hooks import Hooks, HookException
 
 pp = pprint.PrettyPrinter(indent= 4, width=180) # As needed for debugging the test code
         # pp.pprint(hooks._registered)
