@@ -204,33 +204,47 @@ class Core():
                     self.console(f"{action} key '{key}' in the core configuration.")
                     self.console(f"    {FormatForConsole('New key value:', ConsoleColorCodes.PYTHON)} {data_output}")
 
-        if not self.user_defined_config_path:
-            # Nothing specified on initiation, check the working directory for the default config file name
-            default_config_path = os.path.join(os.getcwd(), "graphicdocs.config")
-            if os.path.exists(default_config_path):
-                # Found a config file in the working directory, use that
-                self.user_defined_config_path = default_config_path
-                self.console("Found configuration file 'graphicdocs.config' in the working directory. Loading...")
-            else:
-                # There is no user defined config. Will use defaults. Do not try to proceed further.
-                self.console("No user defined configuration specified. Continuing with default settings...")
-                return
-
         # PROCESS CONFIG SETTINGS
-        try:
-            # Try to load directly from a provided config file first.
-            #   If not provided, iterating over `None` raises exception
-            process_config(self.user_defined_config)    
-        except:
-            # Try to load from a file system based config file
+        # Try to load directly from a provided config file dictionary object first.
+        #   If not provided, iterating over `None` raises exception
+        if self.user_defined_config:
+            self.console("Configuring with provided dictionary object...")
+            try:
+                process_config(self.user_defined_config)
+                return
+            except Exception as err:
+                self.console(f"An error occurred while loading:\n    {err}")
+        
+        # Try to load from a provided file system based config file
+        if self.user_defined_config_path:
+            self.console("Configuring with provided configuration file...")
             try:
                 with open(self.user_defined_config_path) as user_config_file:
                     user_config_data = json.loads(user_config_file.read())
                     process_config(user_config_data)
                     user_config_file.close()
-            except:
-                # Trying to open a config file that doesn't exist raises exceptions. Just use the default config values.
-                self.console("The configuration file was invalid. Continuing with default settings...")
+                return
+            except Exception as err:
+                self.console(f"An error occurred while loading:\n    {err}")
+
+        # Try to load from a graphicdocs.config path
+        default_config_path = os.path.join(os.getcwd(), "graphicdocs.config")
+        if os.path.exists(default_config_path):
+            # Found a config file in the working directory, use that
+            self.user_defined_config_path = default_config_path
+            self.console("Configuring with found 'graphicdocs.config' in the working directory...")
+            try:
+                with open(default_config_path) as user_config_file:
+                    user_config_data = json.loads(user_config_file.read())
+                    process_config(user_config_data)
+                    user_config_file.close()
+                return
+            except Exception as err:
+                self.console(f"An error occurred while loading:\n    {err}")
+
+        # Trying to open a config file that doesn't exist raises exceptions. Just use the default config values.
+        #   All other options have been exhausted at this point, continue with default settings.
+        self.console("No valid configuration file found. Continuing with default settings...")
 
     def _register_core_hooks(self) -> None:
         """ Registers a series of action hooks and filters that the core class uses.
