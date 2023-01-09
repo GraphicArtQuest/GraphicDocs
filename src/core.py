@@ -507,7 +507,7 @@ class Core():
                         #   current_level is still less than the config source_depth (assuming it exists), then we
                         #   should continue on and parse that subfolder. Otherwise, nothing happens and we move on. 
                         current_level += 1
-                        if self.config["source_depth"] and current_level < self.config["source_depth"]:
+                        if self.config["source_depth"] == 0 or current_level < self.config["source_depth"]:
                             traverse_folders(os.path.join(src, sublevel), current_level)  # Recursively call again
                         current_level -= 1
                     add_path(os.path.join(src, sublevel))   # It's a file in the sublevel, add it

@@ -119,7 +119,7 @@ class TestCoreParser(unittest.TestCase):
 
         config = {
             "source": [
-                os.path.join(".", "tests", "core"),  # Guaranteed the files in this folder exist
+                os.path.join(".", "tests"),  # Guaranteed the files in this folder exist
             ],
         }
 
@@ -131,6 +131,16 @@ class TestCoreParser(unittest.TestCase):
         self.assertTrue('unable_to_parse' not in core.actions.done)
         self.assertTrue('parsing_complete' in core.actions.done)
         self.assertTrue('core_loaded' in core.actions.done)
+
+        # By starting at the tests folder and limiting to 2 folders deep, the input files should never get searched.
+        #   Therefore, if one of these does get parsed, it did not succeed.
+        reachable_filename_was_reached = False
+        reachable_filename = r"tests\\parser\\input_files\\testmodule_only_docstring.py"
+        for module in core.parsed_results:
+            if re.search(reachable_filename, module["sourcefile"]):
+                reachable_filename_was_reached = True
+
+        self.assertTrue(reachable_filename_was_reached)
 
     def test_build_folders_with_depth_limit(self):
         """Should parse everything up to the config `source_depth` limit and no further."""
