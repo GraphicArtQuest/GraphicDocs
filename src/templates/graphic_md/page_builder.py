@@ -1,7 +1,6 @@
 import os
 
 tableofcontents:list = []
-destination_filepath:str = ""
 
 def md_header(header_level: int = 1) -> str:
     """ Heler function to format a specified number of Markdown headers (i.e. H1 - H6) using the `#` character.
@@ -36,7 +35,7 @@ def md_source(sourcefile: str, lineno: tuple) -> str:
     if not sourcefile:
         return ""
 
-    link = os.path.relpath(sourcefile, destination_filepath)
+    link = os.path.relpath(sourcefile, os.path.dirname(destination_filepath)).replace('\\', '/')
 
     sourcefile = sourcefile.split('\\')[-1]
     sourcefile = sourcefile.split('/')[-1] # Makes sure to grab the final part of whichever the filename is
@@ -293,6 +292,7 @@ def build_page(module_info: dict, core, destination: str) -> str:
         @returns A consolidated string ready to insert into a file
     """
     # pp.pprint(module_info)
+    global destination_filepath
     destination_filepath = destination  # Used when determining relative path links
     tableofcontents.clear()
 
