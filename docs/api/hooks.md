@@ -24,7 +24,7 @@ Table of Contents
 
 # Classes
 
-## `HookException(`*`message`*`)`<a id='class-hookexception'></a>
+## `HookException`( **`message`** )<a id='class-hookexception'></a>
 
 
 
@@ -41,13 +41,13 @@ Extends: `Exception`
 
 ----
 
-## `Hooks()`<a id='class-hooks'></a>
+## `Hooks`()<a id='class-hooks'></a>
 
 
 
 **Class Methods:**
 
-- `add(`*`hook_name`*, *`callback`*, _`priority`_`)`<a id='class-hooksadd'></a>
+- `add`( **`hook_name`**,  **`callback`**,  _`priority`_ )<a id='class-hooksadd'></a>
     
     
     
@@ -75,7 +75,7 @@ Extends: `Exception`
     ```
     
     
-- `remove(`*`hook_name`*, *`callback`*, _`priority`_`)`<a id='class-hooksremove'></a>
+- `remove`( **`hook_name`**,  **`callback`**,  _`priority`_ )<a id='class-hooksremove'></a>
     
     
     
@@ -104,7 +104,7 @@ Extends: `Exception`
     ```
     
     
-- `remove_all(`*`hook_name`*, _`priority`_`)`<a id='class-hooksremove_all'></a>
+- `remove_all`( **`hook_name`**,  _`priority`_ )<a id='class-hooksremove_all'></a>
     
     
     
@@ -131,7 +131,7 @@ Extends: `Exception`
     ```
     
     
-- `has(`*`hook_name`*, _`priority`_, _`callback`_`)`<a id='class-hookshas'></a>
+- `has`( **`hook_name`**,  _`priority`_,  _`callback`_ )<a id='class-hookshas'></a>
     
     
     
@@ -163,4 +163,4 @@ Extends: `Exception`
 
 ----
 
-Visit [Graphic Art Quest](www.GraphicArtQuest.com) for more!
+Visit [Graphic Art Quest](https://www.GraphicArtQuest.com) for more!

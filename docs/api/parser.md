@@ -26,7 +26,7 @@ Table of Contents
 
 # Functions
 
-## `parse_class(`*`class_ref`*`)`<a id='parse_class'></a>
+## `parse_class`( **`class_ref`** )<a id='parse_class'></a>
 
 
 
@@ -44,7 +44,7 @@ _Source: [parser.py, lines 142 thru 284](src\parser.py)_
 
 ----
 
-## `parse_docstring(`*`docstring`*`)`<a id='parse_docstring'></a>
+## `parse_docstring`( **`docstring`** )<a id='parse_docstring'></a>
 
 
 
@@ -104,7 +104,7 @@ _Source: [parser.py, lines 7 thru 66](src\parser.py)_
 
 ----
 
-## `parse_function(`*`function_ref`*`)`<a id='parse_function'></a>
+## `parse_function`( **`function_ref`** )<a id='parse_function'></a>
 
 
 
@@ -123,7 +123,7 @@ _Source: [parser.py, lines 68 thru 140](src\parser.py)_
 
 ----
 
-## `parse_module(`*`module_ref`*`)`<a id='parse_module'></a>
+## `parse_module`( **`module_ref`** )<a id='parse_module'></a>
 
 
 
@@ -141,4 +141,4 @@ _Source: [parser.py, lines 286 thru 348](src\parser.py)_
 
 ----
 
-Visit [Graphic Art Quest](www.GraphicArtQuest.com) for more!
+Visit [Graphic Art Quest](https://www.GraphicArtQuest.com) for more!

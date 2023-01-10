@@ -41,7 +41,7 @@ Table of Contents
 
 # Classes
 
-## `Core(`_`user_defined_config`_`)`<a id='class-core'></a>
+## `Core`( _`user_defined_config`_ )<a id='class-core'></a>
 
 
 
@@ -51,7 +51,7 @@ Table of Contents
 
 **Class Methods:**
 
-- `validate_filepath()`<a id='class-corevalidate_filepath'></a>
+- `validate_filepath`()<a id='class-corevalidate_filepath'></a>
     
     
     
@@ -79,7 +79,7 @@ Table of Contents
     ```
     
     
-- `console(`*`message`*, _`output_to_console`_`)`<a id='class-coreconsole'></a>
+- `console`( **`message`**,  _`output_to_console`_ )<a id='class-coreconsole'></a>
     
     
     
@@ -104,7 +104,7 @@ Table of Contents
     ```
     
     
-- `load_python_module(`*`path_to_module`*`)`<a id='class-coreload_python_module'></a>
+- `load_python_module`( **`path_to_module`** )<a id='class-coreload_python_module'></a>
     
     
     
@@ -123,7 +123,7 @@ Table of Contents
     **Returns** -> `<built-in function callable>`: A loaded reference to the module
     
     
-- `parse_source_targets(`*`target_path`*`)`<a id='class-coreparse_source_targets'></a>
+- `parse_source_targets`( **`target_path`** )<a id='class-coreparse_source_targets'></a>
     
     
     
@@ -142,7 +142,7 @@ Table of Contents
     **Returns** -> `list`: A list of parsed dictionaries for each file in the source list.
     
     
-- `build()`<a id='class-corebuild'></a>
+- `build`()<a id='class-corebuild'></a>
     
     
     
@@ -153,7 +153,7 @@ Table of Contents
     _Source: [core.py, lines 557 thru 574](src\core.py)_
     
     
-- `do_action(`*`action_name`*, _`args`_`)`<a id='class-coredo_action'></a>
+- `do_action`( **`action_name`**,  _`args`_ )<a id='class-coredo_action'></a>
     
     
     
@@ -185,7 +185,7 @@ Table of Contents
     ```
     
     
-- `apply_filter(`*`filter_name`*, *`filter_input`*`)`<a id='class-coreapply_filter'></a>
+- `apply_filter`( **`filter_name`**,  **`filter_input`** )<a id='class-coreapply_filter'></a>
     
     
     
@@ -220,7 +220,7 @@ Table of Contents
 
 # Functions
 
-## `FormatForConsole(`*`message`*, _`type`_`)`<a id='formatforconsole'></a>
+## `FormatForConsole`( **`message`**,  _`type`_ )<a id='formatforconsole'></a>
 
 
 
@@ -239,4 +239,4 @@ _Source: [core.py, lines 43 thru 50](src\core.py)_
 
 ----
 
-Visit [Graphic Art Quest](www.GraphicArtQuest.com) for more!
+Visit [Graphic Art Quest](https://www.GraphicArtQuest.com) for more!

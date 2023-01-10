@@ -136,11 +136,11 @@ def argument_list(args_list: list) -> str:
     argument_list = ""
     for arg in args_list:
         if arg["required"]:
-            argument_list += f"*`{arg['name']}`*, "
+            argument_list += f"**`{arg['name']}`**,  "
         else:
-            argument_list += f"_`{arg['name']}`_, "
+            argument_list += f"_`{arg['name']}`_,  "
     if argument_list:
-        argument_list = argument_list[:-2]  # Strip off trailing comma and space `, `
+        argument_list = argument_list[:-3]  # Strip off trailing comma and space `, `
 
     return argument_list
 
@@ -198,9 +198,9 @@ def formatted_definition(name: str, arguments: list[dict]) -> str:
     """
 
     if arguments:
-        result = f"`{name}(`{argument_list(arguments)}`)`"
+        result = f"`{name}`( {argument_list(arguments)} )"
     else:
-        result = f"`{name}()`"
+        result = f"`{name}`()"
     
     return result
 
