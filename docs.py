@@ -8,7 +8,7 @@ config = {
     "destination_overwrite": True,
     "graphic_md":
         {
-            "footer": "Visit [Graphic Art Quest](www.GraphicArtQuest.com) for more!"
+            "footer": "Visit [Graphic Art Quest](https://www.GraphicArtQuest.com) for more!"
         }
 }
 
