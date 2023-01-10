@@ -45,6 +45,7 @@ def FormatForConsole(message: str, type: ConsoleColorCodes = ConsoleColorCodes.N
         Applies color to a message that will output in the console.
 
         @param message The message to apply colored escape codes to
+        @param type One of the predefined colors to make the returned text
         @returns The same message wrapped in the appropriate formatting code
     """
     return type.value + str(message) + ConsoleColorCodes.ENDC.value
@@ -54,7 +55,7 @@ class Core():
         """Initial class load
 
         @param user_defined_config An absolute or relative path to a configuration file. If this file path is invalid
-            or does not exist, it will cause no errors. Default configs will load.
+            or does not exist, it will cause no errors as default configs will load.
         @see The Core flowchart.
         """
 
@@ -86,20 +87,26 @@ class Core():
         """ Validate a file path by returning a valid absolute file path under any circumstance.
 
             For settings that involve file paths, either absolute or relative relative paths are allowed.
-            Use a single dot '.' for the current directory, and a double dot '..' to go up a directory.
+            Use a single dot `'.'` for the current directory, and a double dot `'..'` to go up a directory.
             Absolute paths resolve as themselves.
 
             @param input_filepath The generated output documentation base path. Can be relative or absolute.
             @returns Valid absolute path for generated files.
             
-            @example Path Resolution (Working directory is in 'C:\\users\\GAQ\\Working')
+            @example Path Resolution (Working directory is in `'C:\\users\\GAQ\\Working'`):
 
-            self.validate_filepath("output")                                    # C:\\users\\GAQ\\Working\\output
-            self.validate_filepath("C:\\users\\GAQ\\Working\\output")           # C:\\users\\GAQ\\Working\\output
-            self.validate_filepath(".\\output")                                 # C:\\users\\GAQ\\Working\\output
-            self.validate_filepath("..\\output")                                # C:\\users\\GAQ\\output
-            self.validate_filepath("..\\..\\output")                            # C:\\users\\output
-            self.validate_filepath(["Bad Path In List Goes To Working Dir"])    # C:\\users\\GAQ\\Working\\output
+            self.validate_filepath("output")
+                # C:\\users\\GAQ\\Working\\output
+            self.validate_filepath("C:\\users\\GAQ\\Working\\output")
+                # C:\\users\\GAQ\\Working\\output
+            self.validate_filepath(".\\output")
+                # C:\\users\\GAQ\\Working\\output
+            self.validate_filepath("..\\output")
+                # C:\\users\\GAQ\\output
+            self.validate_filepath("..\\..\\output")
+                # C:\\users\\output
+            self.validate_filepath(["Bad Path In List Goes To Working Dir"])
+                # C:\\users\\GAQ\\Working\\output
         """
 
         bad_filename_pattern = "[:*?\"<>|]" # None of these characters may be in a file name on Windows systems
@@ -121,7 +128,7 @@ class Core():
             @param message The message to log to the console
             @param output_to_console If True, this message will log to the console. Otherwise, it won't. It can be
                 useful to set this to false to obtain the pretty formatted error message for use elsewhere. This allows
-                'verbose' to be on while not outputting this particular text to the console.
+                `'verbose'` to be on while not outputting this particular text to the console.
             @returns A string representation of message
             @example
             console("I am a console message.")
@@ -302,11 +309,13 @@ class Core():
             series of possible directories to try to resolve it using the following priorities:
 
             1. In or relative to the working directory where the main script was run from
+
             2. The config file directory
+
             3. The system path (e.g. you build and install callable modules as packages using PIP)
 
             @param path_to_module An absolute or relative path to the module
-            @returns A loaded reference to the module
+            @returns A loaded reference to the module.
         """
 
         loaded_module = None
@@ -476,7 +485,8 @@ class Core():
             """ Determines if the input should be excluded or not.
                 @param input The text to check
                 @param exclusion_list A series of regex patterns to evaluate
-                @returns True if the input matches any of the regex patterns from the exclusion list, False otherwise
+                @returns `True` if the input matches any of the regex patterns from the exclusion list,
+                    `False` otherwise
             """
             if re.search("pycache", input) or re.search(".pyc", input):
                 # Guarantee that the pycache files will always get ignored. These will never be useful for parsing.
@@ -589,7 +599,8 @@ class Core():
             core.filters.add("test_actions", test_func)
             core.filters.add("test_actions", test_func, 15)
             
-            core.apply_filter("test_actions", 2) # testval = 16
+            core.apply_filter("test_actions", 2) 
+                # testval = 16. Input of 2 multiplied by 2 three times (2*2*2*2 = 16)
         """
         if action_name not in self.actions._registered:
             if self.config["verbose"]:
@@ -633,7 +644,8 @@ class Core():
             core.filters.add("test_filters", test_func)
             core.filters.add("test_filters", test_func, 15)
             
-            final_val = core.apply_filter("test_filters", 2) # Returns 16
+            final_val = core.apply_filter("test_filters", 2)
+                # Returns 16. Input of 2 multiplied by 2 three times (2*2*2*2 = 16)
         """
         filter_output = deepcopy(filter_input)
         if filter_name not in self.filters._registered:

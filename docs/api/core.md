@@ -59,23 +59,29 @@ Table of Contents
     
     > Validate a file path by returning a valid absolute file path under any circumstance.
     >
-    > For settings that involve file paths, either absolute or relative relative paths are allowed. Use a single dot '.' for the current directory, and a double dot '..' to go up a directory. Absolute paths resolve as themselves.
+    > For settings that involve file paths, either absolute or relative relative paths are allowed. Use a single dot `'.'` for the current directory, and a double dot `'..'` to go up a directory. Absolute paths resolve as themselves.
     
-    _Source: [core.py, lines 84 thru 116](../../src/core.py#L84-L116)_
+    _Source: [core.py, lines 85 thru 123](../../src/core.py#L85-L123)_
     
     **Returns** -> `str`: Valid absolute path for generated files.
     
     Examples:
     
-    Path Resolution (Working directory is in 'C:\users\GAQ\Working')
+    Path Resolution (Working directory is in `'C:\users\GAQ\Working'`):
     
     ```python
-    self.validate_filepath("output")                                    # C:\users\GAQ\Working\output
-    self.validate_filepath("C:\users\GAQ\Working\output")           # C:\users\GAQ\Working\output
-    self.validate_filepath(".\output")                                 # C:\users\GAQ\Working\output
-    self.validate_filepath("..\output")                                # C:\users\GAQ\output
-    self.validate_filepath("..\..\output")                            # C:\users\output
-    self.validate_filepath(["Bad Path In List Goes To Working Dir"])    # C:\users\GAQ\Working\output
+    self.validate_filepath("output")
+        # C:\users\GAQ\Working\output
+    self.validate_filepath("C:\users\GAQ\Working\output")
+        # C:\users\GAQ\Working\output
+    self.validate_filepath(".\output")
+        # C:\users\GAQ\Working\output
+    self.validate_filepath("..\output")
+        # C:\users\GAQ\output
+    self.validate_filepath("..\..\output")
+        # C:\users\output
+    self.validate_filepath(["Bad Path In List Goes To Working Dir"])
+        # C:\users\GAQ\Working\output
     ```
     
     
@@ -86,13 +92,13 @@ Table of Contents
     |Argument |Type |Default | Description
     |:---|:---:|:---|:---|
     |`message` |`str` | | The message to log to the console|
-    |`output_to_console` _(Optional)_ |`bool` |`True` | If True, this message will log to the console. Otherwise, it won't. It can be useful to set this to false to obtain the pretty formatted error message for use elsewhere. This allows 'verbose' to be on while not outputting this particular text to the console.|
+    |`output_to_console` _(Optional)_ |`bool` |`True` | If True, this message will log to the console. Otherwise, it won't. It can be useful to set this to false to obtain the pretty formatted error message for use elsewhere. This allows `'verbose'` to be on while not outputting this particular text to the console.|
     
     
     
     > Creates pretty formatted text and logs it to the console.
     
-    _Source: [core.py, lines 118 thru 142](../../src/core.py#L118-L142)_
+    _Source: [core.py, lines 125 thru 149](../../src/core.py#L125-L149)_
     
     **Returns** -> `str`: A string representation of message
     
@@ -116,11 +122,15 @@ Table of Contents
     
     > Loads a python module into memory. If not provided an absolute file path, it will traverse through a series of possible directories to try to resolve it using the following priorities:
     >
-    > 1. In or relative to the working directory where the main script was run from 2. The config file directory 3. The system path (e.g. you build and install callable modules as packages using PIP)
+    > 1. In or relative to the working directory where the main script was run from
+    >
+    > 2. The config file directory
+    >
+    > 3. The system path (e.g. you build and install callable modules as packages using PIP)
     
-    _Source: [core.py, lines 300 thru 356](../../src/core.py#L300-L356)_
+    _Source: [core.py, lines 307 thru 365](../../src/core.py#L307-L365)_
     
-    **Returns** -> `<built-in function callable>`: A loaded reference to the module
+    **Returns** -> `<built-in function callable>`: A loaded reference to the module.
     
     
 - `parse_source_targets`( **`target_path`** )<a id='class-coreparse_source_targets'></a>
@@ -137,7 +147,7 @@ Table of Contents
     >
     > This method runs during initialization, but is designed so that it can be used again later for other purposes. It does not update any core instance settings directly.
     
-    _Source: [core.py, lines 464 thru 555](../../src/core.py#L464-L555)_
+    _Source: [core.py, lines 473 thru 565](../../src/core.py#L473-L565)_
     
     **Returns** -> `list`: A list of parsed dictionaries for each file in the source list.
     
@@ -150,7 +160,7 @@ Table of Contents
     
     > Runs the template's build function while passing the core object to it.
     
-    _Source: [core.py, lines 557 thru 574](../../src/core.py#L557-L574)_
+    _Source: [core.py, lines 567 thru 584](../../src/core.py#L567-L584)_
     
     
 - `do_action`( **`action_name`**,  _`args`_ )<a id='class-coredo_action'></a>
@@ -166,7 +176,7 @@ Table of Contents
     
     > Executes all actions with the provided name in order of priority.
     
-    _Source: [core.py, lines 576 thru 619](../../src/core.py#L576-L619)_
+    _Source: [core.py, lines 586 thru 630](../../src/core.py#L586-L630)_
     
     Examples:
     
@@ -181,7 +191,8 @@ Table of Contents
     core.filters.add("test_actions", test_func)
     core.filters.add("test_actions", test_func, 15)
     
-    core.apply_filter("test_actions", 2) # testval = 16
+    core.apply_filter("test_actions", 2) 
+        # testval = 16. Input of 2 multiplied by 2 three times (2*2*2*2 = 16)
     ```
     
     
@@ -198,7 +209,7 @@ Table of Contents
     
     > Applies all filters with the provided name to the provided input sequentially and in order of priority. In most cases, the filtered response should match input format, but this is not strictly necessary.
     
-    _Source: [core.py, lines 621 thru 672](../../src/core.py#L621-L672)_
+    _Source: [core.py, lines 632 thru 684](../../src/core.py#L632-L684)_
     
     Examples:
     
@@ -211,7 +222,8 @@ Table of Contents
     core.filters.add("test_filters", test_func)
     core.filters.add("test_filters", test_func, 15)
     
-    final_val = core.apply_filter("test_filters", 2) # Returns 16
+    final_val = core.apply_filter("test_filters", 2)
+        # Returns 16. Input of 2 multiplied by 2 three times (2*2*2*2 = 16)
     ```
     
     
@@ -227,13 +239,13 @@ Table of Contents
 |Argument |Type |Default | Description
 |:---|:---:|:---|:---|
 |`message` |`str` | | The message to apply colored escape codes to|
-|`type` _(Optional)_ |`ConsoleColorCodes` |`ConsoleColorCodes.ENDC` | |
+|`type` _(Optional)_ |`ConsoleColorCodes` |`ConsoleColorCodes.ENDC` | One of the predefined colors to make the returned text|
 
 
 
 > Applies color to a message that will output in the console.
 
-_Source: [core.py, lines 43 thru 50](../../src/core.py#L43-L50)_
+_Source: [core.py, lines 43 thru 51](../../src/core.py#L43-L51)_
 
 **Returns** -> `str`: The same message wrapped in the appropriate formatting code
 
