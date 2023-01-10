@@ -1,15 +1,8 @@
-# JSDoc For Python
-A JSDoc style annotation method for Python scripts
+# GraphicDocs
 
-## About
+Inspired by the [JSDoc](https://github.com/jsdoc/jsdoc#jsdoc) style for annotating Javascript code, this project defines a convention using Python docstrings and annotations to create better documentation for Python modules, classes, and functions. Your Python scripts are parseable so you can write your own formatting code to automatically generate your documentation, or you can use a built in template such as [`Graphic_MD`](./docs/templates/graphic_md.md).
 
-**NOTE** This project is still in a development status and is making changes quickly.
-
-Inspired by the [JSDoc](https://github.com/jsdoc/jsdoc) style for documenting Javascript code.
-
-This project makes use of JSDOc style comments within Python docstrings combined with annotations to create better documentation for Python projects. Your Python scripts are parseable so you can write your own formatting code, or you can use the provided Markdown generator (in progress).
-
-This project is neither sponsored nor endoresed by the JSDoc team.
+See the [descriptive documentation](./docs/core.md) to learn more details of configuring `GraphicDocs` and guidance on annotating your projects. Several of the source files have their [API documented](./docs/api/) using `GraphicDocs` on itself.
 
 # Getting Started
 
@@ -17,10 +10,33 @@ Download the project `src` folder and import the tool.
 
 This project is not currently available by PIP.
 
-# How to Document
+## Building Documentation Using the Core
+The simplest way to document:
 
+```python
+from graphicdocs import Core
 
-# How to Use the Documentation Parser
+config = {
+    "source": "./path/to/your/source.py"
+}
+
+core = Core(config) # Parses on initialization
+
+core.build()    # Outputs a file `source.md` in the working directory
+```
+
+## How to Use the Documentation Parser Independently
+
+You can use the individual parsing functions to get the raw dictionary object:
+
+```python
+from graphicdocs import parse_module, parse_class, parse_function, parse_docstring
+
+class my_class():
+    ...
+
+my_parsed_class = parse_class(my_class)
+```
 
 # Support Policy
 
