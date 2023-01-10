@@ -61,7 +61,7 @@ Table of Contents
     >
     > For settings that involve file paths, either absolute or relative relative paths are allowed. Use a single dot '.' for the current directory, and a double dot '..' to go up a directory. Absolute paths resolve as themselves.
     
-    _Source: [core.py, lines 84 thru 116](..\..\src\core.py)_
+    _Source: [core.py, lines 84 thru 116](../../src/core.py)_
     
     **Returns** -> `str`: Valid absolute path for generated files.
     
@@ -92,7 +92,7 @@ Table of Contents
     
     > Creates pretty formatted text and logs it to the console.
     
-    _Source: [core.py, lines 118 thru 142](..\..\src\core.py)_
+    _Source: [core.py, lines 118 thru 142](../../src/core.py)_
     
     **Returns** -> `str`: A string representation of message
     
