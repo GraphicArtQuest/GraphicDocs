@@ -61,7 +61,7 @@ Extends: `Exception`
     
     > Register a new hook.
     
-    _Source: [hooks.py, lines 15 thru 54](../../src/hooks.py)_
+    _Source: [hooks.py, lines 15 thru 54](../../src/hooks.py#L15-L54)_
     
     **Returns** -> `True`: True if the hook was found and removed
     
@@ -91,7 +91,7 @@ Extends: `Exception`
     >
     > If a hook matching these conditions is not met, it will do nothing and throw no errors.
     
-    _Source: [hooks.py, lines 56 thru 88](../../src/hooks.py)_
+    _Source: [hooks.py, lines 56 thru 88](../../src/hooks.py#L56-L88)_
     
     **Returns** -> `bool`: True if the hook was found and removed, False otherwise
     
@@ -119,7 +119,7 @@ Extends: `Exception`
     >
     > If no hooks matching these conditions are found, it will do nothing and throw no errors.
     
-    _Source: [hooks.py, lines 90 thru 117](../../src/hooks.py)_
+    _Source: [hooks.py, lines 90 thru 117](../../src/hooks.py#L90-L117)_
     
     **Returns** -> `bool`: True if the hooks were found and removed, False otherwise
     
@@ -147,7 +147,7 @@ Extends: `Exception`
     >
     > If no hooks matching these conditions are found, it will do nothing and throw no errors.
     
-    _Source: [hooks.py, lines 119 thru 153](../../src/hooks.py)_
+    _Source: [hooks.py, lines 119 thru 153](../../src/hooks.py#L119-L153)_
     
     **Returns** -> `bool`: True if the hooks were found and removed, False otherwise
     

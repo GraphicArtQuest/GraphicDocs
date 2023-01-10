@@ -38,7 +38,7 @@ Table of Contents
 
 > Inspect a class and return a dictionary of documentation values.
 
-_Source: [parser.py, lines 142 thru 284](../../src/parser.py)_
+_Source: [parser.py, lines 142 thru 284](../../src/parser.py#L142-L284)_
 
 **Returns** -> `dict`: a dictionary of documentation values: { annotations: List of tuples as (name: `str`, type: `object`) (or `None`), arguments: Excluding `self`, list of dictionaries as [default: `any`, name: `str`, required: bool, type: any] (or `None`), docstring: Parsed docstring object (or `None`) methods: List of parsed functions (or `None`) name: String of the function name parent: Name of the parent class this class inherited from (or `None`) properties: List of dictionaries for all class properties as [docstring: `dict`, name: `str`, readable: `bool`, writeable: `bool`] }
 
@@ -100,7 +100,7 @@ _Source: [parser.py, lines 142 thru 284](../../src/parser.py)_
 >
 > - @version
 
-_Source: [parser.py, lines 7 thru 66](../../src/parser.py)_
+_Source: [parser.py, lines 7 thru 66](../../src/parser.py#L7-L66)_
 
 ----
 
@@ -116,7 +116,7 @@ _Source: [parser.py, lines 7 thru 66](../../src/parser.py)_
 
 > Inpsect a function and return a dictionary of documentation values.
 
-_Source: [parser.py, lines 68 thru 140](../../src/parser.py)_
+_Source: [parser.py, lines 68 thru 140](../../src/parser.py#L68-L140)_
 
 **Returns** -> `dict`: If not passed a function, returns `None`. Otherwise, it returns a dictionary of documentation values for that function:
 { arguments: List of dictionaries as [default: `any`, name: `str`, required: bool, type: any] (or `None`), docstring: Parsed docstring object (or `None`) lineno: Lines in the source code where this occers: tuple(startingline: int, endingline: int) name: String of the function name returns: Whatever the return value type is sourcefile: A string filepath for where this sourcefile is located }
@@ -137,7 +137,7 @@ _Source: [parser.py, lines 68 thru 140](../../src/parser.py)_
 >
 > Functions and classes will always show up in alphabetical order, NOT the order they appear in the file.
 
-_Source: [parser.py, lines 286 thru 348](../../src/parser.py)_
+_Source: [parser.py, lines 286 thru 348](../../src/parser.py#L286-L348)_
 
 ----
 

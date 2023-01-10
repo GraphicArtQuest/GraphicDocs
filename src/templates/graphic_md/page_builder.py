@@ -42,6 +42,7 @@ def md_source(sourcefile: str, lineno: tuple) -> str:
 
     if lineno:
         lineno_part = f", lines {lineno[0]} thru {lineno[1]}"
+        link += f"#L{lineno[0]}-L{lineno[1]}"
     else:
         lineno_part = ""
 
