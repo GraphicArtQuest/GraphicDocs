@@ -60,5 +60,5 @@ def sayHello(name: str, age: int) -> None:
 
 ## Related
 
-- `@since`
-- `@version`
+- [`@since`](./SINCE.md)
+- [`@version`](./VERSION.md)

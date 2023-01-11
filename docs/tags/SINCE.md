@@ -60,5 +60,5 @@ def sayHello(name: str, age: int) -> None:
 
 ## Related
 
-- `@deprecated`
-- `@version`
+- [`@deprecated`](./DEPRECATED.md)
+- [`@version`](./VERSION.md)

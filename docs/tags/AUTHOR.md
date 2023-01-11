@@ -45,5 +45,5 @@ def my_function() -> None:
 
 ## Related
 
-- `@copyright`
-- `@license`
+- [`@copyright`](./COPYRIGHT.md)
+- [`@license`](./LICENSE.md)

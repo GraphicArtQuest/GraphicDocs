@@ -40,5 +40,5 @@ def _sayHello(name: str, age: int) -> str:
 
 ## Related
 
-- `@private`
-- `@public`
+- [`@private`](./PRIVATE.md)
+- [`@public`](./PUBLIC.md)

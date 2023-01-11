@@ -47,5 +47,5 @@ Multiple `@memberof` tags:
 
 ## Related
 
-- `@global`
-- `@namepsace`
+- [`@global`](./GLOBAL.md)
+- [`@namepsace`](./NAMESPACE.md)

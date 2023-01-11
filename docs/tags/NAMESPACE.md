@@ -51,5 +51,5 @@ def my_function() -> None:
 
 ## Related
 
-- `@global`
-- `@memberof`
+- [`@global`](./GLOBAL.md)
+- [`@memberof`](./MEMBEROF.md)

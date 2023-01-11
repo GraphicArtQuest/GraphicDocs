@@ -26,5 +26,5 @@ def sayHello(name: str, age: int) -> str:
 
 ## Related
 
-- `@memberof`
-- `@namespace`
+- [`@memberof`](./MEMBEROF.md)
+- [`@namespace`](./NAMESPACE.md)
