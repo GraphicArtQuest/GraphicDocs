@@ -44,7 +44,7 @@ This add-on is maintained and supported. Submit a [bug report][bugs] if you enco
 
 # License and Development
 
-To help as many developers as possible, this project and all other files in this repository are distributed as free and open-source software under the [MIT license][license], © 2022.
+To help as many developers as possible, this project and all other files in this repository are distributed as free and open-source software under the [MIT license][license], © 2022-2023.
 
 Both [contributions](CONTRIBUTING.md) and [bug reports][bugs] welcome.
 
