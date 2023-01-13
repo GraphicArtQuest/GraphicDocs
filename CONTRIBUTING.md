@@ -40,8 +40,8 @@ Good pull requests are outstanding help. They should remain focused in scope and
 To submit a pull request,
 
 1. Fork and clone the repository
-1. Create a branch for your edits
-1. Make sure your work follows the [commits](#commits) guidance
+2. Create a branch for your edits
+3. Make sure your work follows the [commits](#commits) guidance
 
 [codeofconduct]: https://github.com/GraphicArtQuest/.github/blob/main/CODE_OF_CONDUCT.md
 [securitypolicy]: https://github.com/GraphicArtQuest/.github/blob/main/SECURITY.md
