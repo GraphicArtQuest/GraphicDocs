@@ -2,6 +2,16 @@
 
 Code is important, but documentation is critical. Spend more time writing code and less time agonizing over how to document it.
 
+<div align="center">
+
+[![Documented with GraphicDocs](https://img.shields.io/badge/Documented%20with-GraphicDocs-841561)](https://github.com/GraphicArtQuest/GraphicDocs)
+
+[![Maintained](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](#envelope-contact)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](/../../blob/main/CONTRIBUTING.md#contributing-guide)
+[![License](https://img.shields.io/github/license/M-Scott-Lassiter/jest-geojson?color=blue)](https://github.com/M-Scott-Lassiter/jest-geojson/blob/main/LICENSE)
+
+</div>
+
 **Table of Contents**
 - [About](#about)
 - [Documenting Conventions](#documenting-conventions)
@@ -11,6 +21,7 @@ Code is important, but documentation is critical. Spend more time writing code a
     - [Building Documentation Using the Core](#building-documentation-using-the-core)
     - [Using the Documentation Parser Independently](#using-the-documentation-parser-independently)
     - [Templates](#templates)
+- [Badge and Use in Github Projects](#badge-and-use-in-github-projects)
 - [License and Development](#license-and-development)
 
 # About
@@ -184,6 +195,16 @@ my_parsed_class = parse_class(my_class)
 
 - [`Graphic_MD`](./docs/templates/graphic_md.md)
 
+You can [make your own templates](https://github.com/GraphicArtQuest/GraphicDocs/blob/main/docs/core.md#templates) that take the parsed data and output into whatever Markdown, HTML, or other output format you want. You can write your template locally, or build and distribute it with PIP.
+
+# Badge and Use in Github Projects
+
+I encourage you to apply the [`graphicdocs`](https://github.com/topics/graphicdocs) Github repository tag if you use this tool so others can see examples in action. Additionally, feel free to add the following badge to your repository:
+
+[![Documented with GraphicDocs](https://img.shields.io/badge/Documented%20with-GraphicDocs-841561)](https://github.com/GraphicArtQuest/GraphicDocs)
+
+    
+    [![Documented with GraphicDocs](https://img.shields.io/badge/Documented%20with-GraphicDocs-841561)](https://github.com/GraphicArtQuest/GraphicDocs)
 
 # License and Development
 
