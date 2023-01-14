@@ -23,7 +23,7 @@ Before contributing, please take a moment to read through this document. This gu
     -   [Local Installation](#local-installation)
     -   [Project Structure](#project-structure)
     -   [Testing](#testing)
-    -   [API Documentation](#api-documentation)
+    -   [Documentation](#documentation)
     -   [Building](#building)
 
 </details>
@@ -127,9 +127,9 @@ This project uses the `unittest` suite. To run all tests, open the console and e
 python test.py
 ```
 
-### API Documentation
+### Documentation
 
-Most of the project's documentation is (ironically) created by hand in order to guide users through detailed steps of how to setup and configure the tool. HOWEVER, the API documentation itself gets created by running the following console command:
+Most of the project's documentation is (ironically) created by hand in order to guide users through detailed steps of how to setup and configure the tool. *However*, the API documentation itself gets created by running the following console command:
 
 ```bash
 python docs.py
