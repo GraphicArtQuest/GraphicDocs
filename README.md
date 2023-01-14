@@ -2,6 +2,8 @@
 
 Code is important, but documentation is critical. Spend more time writing code and less time agonizing over how to document it.
 
+----
+
 <div align="center">
 
 [![Documented with GraphicDocs](https://img.shields.io/badge/Documented%20with-GraphicDocs-841561)](https://github.com/GraphicArtQuest/GraphicDocs)
@@ -12,7 +14,11 @@ Code is important, but documentation is critical. Spend more time writing code a
 
 </div>
 
-**Table of Contents**
+----
+
+<details open="open">
+    <summary><b>Table of Contents</b></summary>
+
 - [About](#about)
 - [Documenting Conventions](#documenting-conventions)
     - [Supported Annotation Types](#supported-annotation-types)
@@ -23,6 +29,10 @@ Code is important, but documentation is critical. Spend more time writing code a
     - [Templates](#templates)
 - [Badge and Use in Github Projects](#badge-and-use-in-github-projects)
 - [License and Development](#license-and-development)
+
+</div>
+
+----
 
 # About
 
