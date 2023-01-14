@@ -1,5 +1,11 @@
 # Contributing Guide
 
+<div align="center">
+
+[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+
+</div>
+
 **Thank you for contributing to `GraphicDocs`!**
 
 Before contributing, please take a moment to read through this document. This guide documents the standards, tooling, and processes that go into the CI/CD pipeline.
