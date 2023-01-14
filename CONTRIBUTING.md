@@ -13,6 +13,12 @@ Before contributing, please take a moment to read through this document. This gu
     -   [Propose New Tags](#propose-new-tags)
     -   [Submit a Pull Request](#submit-a-pull-request)
 - [Commits](#commits)
+- [Development](#development)
+    -   [Local Installation](#local-installation)
+    -   [Project Structure](#project-structure)
+    -   [Testing](#testing)
+    -   [API Documentation](#api-documentation)
+    -   [Building](#building)
 
 </details>
 
@@ -46,9 +52,9 @@ To submit a pull request,
 
 ## Commits
 
-All commits must follow the Graphic Art Quest [Common Commit Guidance][common_committing] including [types](https://github.com/GraphicArtQuest/Common-Commit-Guidance#types) and [scopes](https://github.com/GraphicArtQuest/Common-Commit-Guidance#scopes).
+All commits must follow the Graphic Art Quest [Common Commit Guidance][common_committing] guidelines, types, and scopes.
 
-The following custom scopes are allowed:
+The following [custom scopes](https://github.com/GraphicArtQuest/Common-Commit-Guidance#scopes) are allowed:
 
 - Any [docstring tag](https://github.com/GraphicArtQuest/GraphicDocs#supported-docstring-tags) (e.g. `author`, `example`, `param`, `throws`)
 - One of the key source files:
@@ -59,6 +65,73 @@ The following custom scopes are allowed:
     - `grahpic_md`
 
 Changes to how tags are parsed from the [docstring functions](./src/parse_docstring_functions/) should use the relevant tag scope. Use `parser` for changes to the parsing engine itself.
+
+## Development
+
+This project requires you to have [Python](https://www.python.org/downloads/) installed.
+
+### Local Installation
+
+```bash
+git clone https://github.com/GraphicArtQuest/GraphicDocs.git
+cd GraphicDocs
+```
+
+After installing, you should [run the test script](#testing) to verify everything works without runtime errors before you start modifying.
+
+### Project Structure
+
+```
+├── docs
+│   ├── api
+│   ├── tags
+│   ├── templates
+|   └── core.md
+├── src
+│   ├── parse_docstring_functions
+│   ├── plugins
+│   ├── templates
+|   ├── core.py
+|   ├── hooks.py
+|   └── parser.py
+├── tests
+|   ├── core
+|   └── parser
+```
+
+- `docs`: 
+    - `api`: Automatically generated with `GraphicDocs` itself; make no changes by hand here
+    - `tags`: Detailed examples on use of each docstring tag
+    - `templates`: Detailed instructions on how to use the built-in templates
+    - `core.md`: Detailed instructions on how to use all the features within the core engine
+- `src`: contains all source files
+    - `parse_docstring_functions`: individual tag parsing functions, split up for modularity
+    - `plugins`: built-in plugins that ship with `GraphicDocs`
+    - `templates`: built-in templates that ship with `GraphicDocs`
+    - `core.md`: The main code that directs the parsing, organizing, and creation of code documentation
+    - `hooks.py`: A system of filters and actions that the core, plugins, and templates use to extend functionality
+    - `parser.py`: The engine behind parsing docstrings into a usable dictionary object
+- `tests`: The `unittest` scripts used to verify the core, hooks, and parser work as designed
+
+### Testing
+
+This project uses the `unittest` suite. To run all tests, open the console and enter:
+
+```bash
+python test.py
+```
+
+### API Documentation
+
+Most of the project's documentation is (ironically) created by hand in order to guide users through detailed steps of how to setup and configure the tool. HOWEVER, the API documentation itself gets created by running the following console command:
+
+```bash
+python docs.py
+```
+
+### Building
+
+There is currently no build step in this project.
 
 [codeofconduct]: https://github.com/GraphicArtQuest/.github/blob/main/CODE_OF_CONDUCT.md
 [securitypolicy]: https://github.com/GraphicArtQuest/.github/blob/main/SECURITY.md
