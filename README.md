@@ -30,7 +30,7 @@ Code is important, but documentation is critical. Spend more time writing code a
 - [Badge and Use in Github Projects](#badge-and-use-in-github-projects)
 - [License and Development](#license-and-development)
 
-</div>
+</details>
 
 ----
 
