@@ -12,6 +12,7 @@ Before contributing, please take a moment to read through this document. This gu
     -   [Submit Issues](#submit-issues)
     -   [Propose New Tags](#propose-new-tags)
     -   [Submit a Pull Request](#submit-a-pull-request)
+- [Commits](#commits)
 
 </details>
 
@@ -43,6 +44,23 @@ To submit a pull request,
 2. Create a branch for your edits
 3. Make sure your work follows the [commits](#commits) guidance
 
+## Commits
+
+All commits must follow the Graphic Art Quest [Common Commit Guidance][common_committing] including [types](https://github.com/GraphicArtQuest/Common-Commit-Guidance#types) and [scopes](https://github.com/GraphicArtQuest/Common-Commit-Guidance#scopes).
+
+The following custom scopes are allowed:
+
+- Any [docstring tag](https://github.com/GraphicArtQuest/GraphicDocs#supported-docstring-tags) (e.g. `author`, `example`, `param`, `throws`)
+- One of the key source files:
+    - `core`
+    - `hooks`
+    - `parser`
+- A template:
+    - `grahpic_md`
+
+Changes to how tags are parsed from the [docstring functions](./src/parse_docstring_functions/) should use the relevant tag scope. Use `parser` for changes to the parsing engine itself.
+
 [codeofconduct]: https://github.com/GraphicArtQuest/.github/blob/main/CODE_OF_CONDUCT.md
 [securitypolicy]: https://github.com/GraphicArtQuest/.github/blob/main/SECURITY.md
 [issues]: https://github.com/GraphicArtQuest/GraphicDocs/issues/new/choose
+[common_committing]: https://github.com/GraphicArtQuest/Common-Commit-Guidance
