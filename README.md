@@ -227,5 +227,5 @@ This add-on is maintained and supported. Submit a [bug report][bugs] if you enco
 Maintained by [M. Scott Lassiter][maintainer].
 
 [license]: LICENSE
-[bugs]: https://github.com/GraphicArtQuest/Blender-Scripting-Assistant/issues/new/choose
+[bugs]: https://github.com/GraphicArtQuest/GraphicDocs/issues/new/choose
 [maintainer]: https://graphicartquest.com/author/scott-lassiter/
