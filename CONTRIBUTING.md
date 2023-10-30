@@ -58,7 +58,7 @@ To submit a pull request,
 
 ## Commits
 
-All commits must follow the Graphic Art Quest [Common Commit Guidance][common_committing] guidelines, types, and scopes.
+All commits must follow the Wayfind Entertainment [Common Commit Guidance][common_committing] guidelines, types, and scopes.
 
 The following [custom scopes](https://github.com/GraphicArtQuest/Common-Commit-Guidance#scopes) are allowed:
 
@@ -142,4 +142,4 @@ There is currently no build step in this project.
 [codeofconduct]: https://github.com/GraphicArtQuest/.github/blob/main/CODE_OF_CONDUCT.md
 [securitypolicy]: https://github.com/GraphicArtQuest/.github/blob/main/SECURITY.md
 [issues]: https://github.com/GraphicArtQuest/GraphicDocs/issues/new/choose
-[common_committing]: https://github.com/GraphicArtQuest/Common-Commit-Guidance
+[common_committing]: https://github.com/WayfindEntertainment/Common-Commit-Guidance
